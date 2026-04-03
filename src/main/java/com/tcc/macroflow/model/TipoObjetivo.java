@@ -1,39 +1,24 @@
 package com.tcc.macroflow.model;
 
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+public class TipoObjetivo {
 
-
-
-public class Consumo {
-
-    public enum TipoConsumo{
-        RECEITA,
-        COMIDA,
-    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-
-
-    @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
-
     @Column(nullable = false)
-    private LocalDateTime dataHora;
-
+    private String tipo;
     @Column(nullable = false)
-    private TipoConsumo tipoConsumo;
+    private String descricao;
+
 
 }
