@@ -1,4 +1,7 @@
 package com.tcc.macroflow.repository;
 
-public interface ComidaRepository {
+import com.tcc.macroflow.model.Comida;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ComidaRepository  extends JpaRepository<Comida,Long> {
 }
