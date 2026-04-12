@@ -10,5 +10,9 @@ import java.util.Optional;
 
 public interface EmailRepository extends JpaRepository<CodigoEmail,Long> {
 
-    Optional<CodigoEmail> findByUsuario(Usuario usuario);
+
+
+    Optional<CodigoEmail> findTopByUsuarioIdOrderByDataCriacaoDesc(Long usuarioId);
+
+    Optional<CodigoEmail> findByUsuarioId(Long id);
 }

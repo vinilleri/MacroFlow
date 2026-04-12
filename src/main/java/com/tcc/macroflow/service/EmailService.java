@@ -5,10 +5,12 @@ import com.tcc.macroflow.model.Usuario;
 import com.tcc.macroflow.repository.EmailRepository;
 import com.tcc.macroflow.repository.UsuarioRepository;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import jakarta.transaction.Transactional;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -18,13 +20,14 @@ public class EmailService
 {
 
     private final EmailRepository emailRepository;
-
+    private final UsuarioRepository usuarioRepository;
     private final JavaMailSender mailSender;
     private static final SecureRandom random = new SecureRandom();
 
 
     public EmailService(EmailRepository emailRepository, UsuarioRepository usuarioRepository, JavaMailSender mailSender) {
         this.emailRepository = emailRepository;
+        this.usuarioRepository = usuarioRepository;
 
         this.mailSender = mailSender;
     }
@@ -35,6 +38,7 @@ public class EmailService
         String codigo = String.valueOf(random.nextInt(900000)+ 100000);
         novoCodigo.setCodigo(codigo);
         novoCodigo.setDataExpiracao(LocalDateTime.now().plusMinutes(10));
+        novoCodigo.setDataCriacao(LocalDateTime.now());
         novoCodigo.setUsado(false);
         novoCodigo.setUsuario(usuario);
 
@@ -47,15 +51,14 @@ public class EmailService
     public void enviarCodigo(String destino, CodigoEmail codigoEmail) throws Exception {
         MimeMessage mensagem = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mensagem, true, "UTF-8");
-
+        helper.setFrom("onboarding@resend.dev");
         helper.setTo(destino);
         helper.setSubject("Código de Verificação");
 
         String html = """
         <div style="font-family: Arial; text-align: center;">
             <h2>Verificação de Conta</h2>
-            <p>Use o código abaixo para verificar seu email:</p>
-            
+            <p>Use o código abaixo para verificar seu email:</p> 
             <div style="
                 font-size: 24px;
                 font-weight: bold;
@@ -76,20 +79,35 @@ public class EmailService
         mailSender.send(mensagem);
     }
 
-
+    @Transactional
     public void validarCodigo(Usuario usuario, String codigo) throws Exception {
 
-            CodigoEmail email = emailRepository.findByUsuario(usuario).orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
+            CodigoEmail email = emailRepository.findByUsuarioId(usuario.getId()).orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
 
+            if(email.getDataExpiracao().isBefore(LocalDateTime.now())){
+            throw  new Exception("Codigo inválido");
+
+        }
             if(!codigo.equals(email.getCodigo())){
                 throw new Exception("Codigo errado");
-            }
 
-        if(!email.isUsado()){
+            }
+            if(email.isUsado()){
             throw new Exception("Codigo já utilizado");
             }
-        if(email.getDataExpiracao().isBefore(LocalDateTime.now())){
-            throw  new Exception("Codigo inválido");
-        }
+        usuario.setVerificado(true);
+        usuario.setAtivo(true);
+        email.setUsado(true);
+
+        usuarioRepository.save(usuario);
+        emailRepository.save(email);
+
+
+    }
+    public CodigoEmail buscarUltimo(Long usuarioId){
+        return emailRepository.findTopByUsuarioIdOrderByDataCriacaoDesc(usuarioId).orElse(null);
+
+
+
     }
 }

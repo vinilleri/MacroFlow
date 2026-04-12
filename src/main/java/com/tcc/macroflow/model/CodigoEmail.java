@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +25,10 @@ public class CodigoEmail {
     private LocalDateTime dataExpiracao;
 
     @Column(nullable = false)
+    private LocalDateTime dataCriacao;
+    @Column(nullable = false)
     private boolean usado;
+
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
