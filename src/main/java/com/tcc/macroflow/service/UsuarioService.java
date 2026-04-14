@@ -30,6 +30,12 @@ public class UsuarioService {
 
         Usuario usuario = new Usuario();
         usuario.setNome(dto.getNome());
+
+        Usuario buscaEmail = usuarioRepository.findByEmail(dto.getEmail()).orElse(null);
+
+        if(buscaEmail != null){
+            throw  new RuntimeException("Email já existe");
+        }
         usuario.setEmail(dto.getEmail());
         usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
 
@@ -52,6 +58,14 @@ public class UsuarioService {
         atualizado.setNome(usuario.getNome());
         if(usuario.getSenha() != null && !usuario.getSenha().isEmpty()) {
             atualizado.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        }
+
+        if(usuario.getEmail() != null && !usuario.getEmail().isEmpty() && !atualizado.getEmail().equals(usuario.getEmail())) {
+            Usuario buscaEmail = usuarioRepository.findByEmail(usuario.getEmail()).orElse(null);
+
+            if (buscaEmail != null) {
+                throw new RuntimeException("Email já existe");
+            }
         }
         atualizado.setEmail(usuario.getEmail());
 
