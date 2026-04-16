@@ -82,7 +82,9 @@ public class EmailService
     @Transactional
     public void validarCodigo(Usuario usuario, String codigo) throws Exception {
 
-            CodigoEmail email = emailRepository.findByUsuarioId(usuario.getId()).orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
+            CodigoEmail email = emailRepository.findTopByUsuarioIdOrderByDataCriacaoDesc(usuario.getId()).orElseThrow(
+                    () -> new RuntimeException("Usuario não encontrado")
+            );
 
             if(email.getDataExpiracao().isBefore(LocalDateTime.now())){
             throw  new Exception("Codigo inválido");
@@ -95,7 +97,6 @@ public class EmailService
             if(email.isUsado()){
             throw new Exception("Codigo já utilizado");
             }
-        usuario.setVerificado(true);
         usuario.setAtivo(true);
         email.setUsado(true);
 

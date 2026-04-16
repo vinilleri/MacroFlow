@@ -38,11 +38,10 @@ private final TokenService tokenService;
         return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
     }
 
-    @PutMapping("/{id}")
-    @PreAuthorize("#id == authentication.principal.id")
-    public ResponseEntity<?> editar(@PathVariable Long id, @RequestBody UsuarioDTO usuario){
+    @PutMapping
+    public ResponseEntity<?> editar( @RequestBody UsuarioDTO usuario){
         try{
-            Usuario atualizado = usuarioService.editar(id,usuario);
+            Usuario atualizado = usuarioService.editar(usuario);
 
             return ResponseEntity.ok(atualizado);
         } catch (Exception e) {
@@ -50,11 +49,10 @@ private final TokenService tokenService;
         }
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("#id == authentication.principal.id")
-    public ResponseEntity<?> deletar(@PathVariable Long id){
+    @DeleteMapping
+    public ResponseEntity<?> deletar(){
     try {
-        usuarioService.deletar(id);
+        usuarioService.deletar();
         return ResponseEntity.noContent().build();
     }
     catch(Exception e){
@@ -62,50 +60,38 @@ private final TokenService tokenService;
 }
 }
     @PostMapping("/login")
-    public ResponseEntity<?> verificarLogin(@RequestBody UsuarioDTO login){
+    public ResponseEntity<?> verificarLogin(@RequestBody UsuarioDTO login) throws Exception {
         if(usuarioService.verificarLogin(login.getEmail(), login.getSenha())){
             Usuario usuario = usuarioService.buscarPorEmail(login.getEmail());
+            CodigoEmail ultimoCodigoEmail = emailService.buscarUltimo(usuario.getId());
+            if(ultimoCodigoEmail != null && ultimoCodigoEmail.getDataCriacao().plusSeconds(10).isAfter(LocalDateTime.now())){
+                throw new RuntimeException("Aguarde 10 segundos para solicitar outro código");
+            }
 
-            String token = tokenService.gerarToken(usuario);
-            return ResponseEntity.ok(Collections.singletonMap("token",token));
-        }
+                CodigoEmail codigoEmail = emailService.gerarCodigo(usuario);
+
+                if (codigoEmail != null) {
+                    emailService.enviarCodigo(usuario.getEmail(), codigoEmail);
+                    return ResponseEntity.ok("Se o email existir, o código foi enviado");
+                }
+            }
         return ResponseEntity.status(401).body("Credenciais inválidas");
     }
 
-    @PostMapping("/codigoEmail")
-    public ResponseEntity<?> codigoEmail(@RequestBody UsuarioDTO usuarioDTO) throws Exception {
-
-        Usuario usuario = usuarioService.buscarPorEmail(usuarioDTO.getEmail());
-        CodigoEmail ultimoCodigoEmail = emailService.buscarUltimo(usuario.getId());
-
-        if(ultimoCodigoEmail != null && ultimoCodigoEmail.getDataCriacao().plusSeconds(10).isAfter(LocalDateTime.now())){
-            throw new RuntimeException("Aguarde 10 segundos para solicitar outro código");
-        }
-        if(usuario != null && !usuario.isVerificado()) {
-            CodigoEmail codigoEmail = emailService.gerarCodigo(usuario);
-
-            if (codigoEmail != null) {
-                emailService.enviarCodigo(usuario.getEmail(), codigoEmail);
-                return ResponseEntity.ok("Se o email existir, o código foi enviado");
-            }
-        }
-        return ResponseEntity.notFound().build();
-
-    }
-
-    @PostMapping("/verificarEmail/{id}")
-    public ResponseEntity<?> verificarEmail(@PathVariable Long id, @RequestBody EmailDTO emailDTO) throws Exception {
+    @PostMapping("/login/confirmar/{id}")
+    public ResponseEntity<?> validarLogin(@PathVariable Long id, @RequestBody EmailDTO emailDTO) throws Exception {
         Usuario usuario = usuarioService.buscarPorId(id);
 
         emailService.validarCodigo(usuario, emailDTO.getCodigo());
-        return ResponseEntity.ok("Usuario verificado");
+
+        String token = tokenService.gerarToken(usuario);
+        return ResponseEntity.ok(Collections.singletonMap("token",token));
     }
 
-    @PostMapping("/deslogar/{id}")
-    @PreAuthorize("#id == authentication.principal.id")
-    public ResponseEntity<?> deslogar(@PathVariable Long id) {
+    @PostMapping("/deslogar")
+    public ResponseEntity<?> deslogar() {
 
-        usuarioService.deslogar(id);
+        usuarioService.deslogar();
         return ResponseEntity.ok("Usuário deslogado");
     }
 

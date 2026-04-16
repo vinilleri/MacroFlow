@@ -2,6 +2,7 @@ package com.tcc.macroflow.service;
 
 
 import com.tcc.macroflow.dto.ComidaDTO;
+import com.tcc.macroflow.dto.ComidaResponseDTO;
 import com.tcc.macroflow.dto.UsuarioDTO;
 import com.tcc.macroflow.model.Comida;
 import com.tcc.macroflow.model.ComidaUsuario;
@@ -27,13 +28,14 @@ private final ComidaRepository comidaRepository;
     }
 
     @Transactional
-    public ComidaUsuario salvar (ComidaDTO comidaDTO){
+    public ComidaResponseDTO salvar (ComidaDTO comidaDTO){
         ComidaUsuario comidaUsuario = new ComidaUsuario();
         comidaUsuario.setCalorias(comidaDTO.getCalorias());
         comidaUsuario.setNome(comidaDTO.getNome());
         comidaUsuario.setCarboidrato(comidaDTO.getCarboidrato());
         comidaUsuario.setGordura(comidaDTO.getGordura());
         comidaUsuario.setProteinas(comidaDTO.getProteinas());
+        comidaUsuario.setIcone(comidaDTO.getIcone());
         Usuario usuario = (Usuario) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
@@ -46,7 +48,16 @@ private final ComidaRepository comidaRepository;
         }
 
         comidaUsuario.setUsuario(usuario);
-        return comidaUsuarioRepository.save(comidaUsuario);
+        comidaUsuarioRepository.save(comidaUsuario);
+
+
+        return new ComidaResponseDTO(comidaUsuario.getId(),
+                comidaUsuario.getNome(),
+                comidaUsuario.getCalorias(),
+                comidaUsuario.getProteinas(),
+                comidaUsuario.getCarboidrato(),
+                comidaUsuario.getGordura(),
+                comidaUsuario.getIcone());
     }
 
     @Transactional
@@ -66,7 +77,7 @@ private final ComidaRepository comidaRepository;
     }
 
     @Transactional
-    public ComidaUsuario editar(Long id, ComidaDTO comida) {
+    public ComidaResponseDTO editar(Long id, ComidaDTO comida) {
 
             ComidaUsuario atualizado = comidaUsuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Comida não encontrada"));
@@ -83,8 +94,14 @@ private final ComidaRepository comidaRepository;
         atualizado.setProteinas(comida.getProteinas());
         atualizado.setGordura(comida.getGordura());
         atualizado.setCalorias(comida.getCalorias());
-        return comidaUsuarioRepository.save(atualizado);
-
+        comidaUsuarioRepository.save(atualizado);
+        return new ComidaResponseDTO(atualizado.getId(),
+                atualizado.getNome(),
+                atualizado.getCalorias(),
+                atualizado.getProteinas(),
+                atualizado.getCarboidrato(),
+                atualizado.getGordura(),
+                atualizado.getIcone());
 
     }
 
@@ -94,8 +111,24 @@ private final ComidaRepository comidaRepository;
         return comidaRepository.findAll();
     }
 
-    public List<ComidaUsuario> listarComidaUsuario(Long usuarioId){
-        return comidaUsuarioRepository.findAllByUsuarioId(usuarioId);
+    public List<ComidaResponseDTO> listarComidaUsuario(){
+        Usuario usuario = (Usuario) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        List<ComidaUsuario> lista = comidaUsuarioRepository.findAllByUsuarioId(usuario.getId());
+
+       return lista.stream()
+                .map((comidaUsuario) -> new ComidaResponseDTO(comidaUsuario.getId(),
+                        comidaUsuario.getNome(),
+                        comidaUsuario.getCalorias(),
+                        comidaUsuario.getProteinas(),
+                        comidaUsuario.getCarboidrato(),
+                        comidaUsuario.getGordura(),
+                        comidaUsuario.getIcone()
+                        ))
+                .toList();
     }
+
+
 
 }

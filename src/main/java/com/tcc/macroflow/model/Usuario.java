@@ -1,5 +1,6 @@
 package com.tcc.macroflow.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,16 +28,17 @@ public class Usuario implements UserDetails {
     private String nome;
     @Column(nullable = false)
     private String email;
+    @JsonIgnore
     @Column(nullable = false)
     private String senha;
     @Column(nullable = false)
     private boolean ativo = false;
-    @Column(nullable = false)
-    private boolean verificado = false;
 
     @ManyToOne
     @JoinColumn(name = "atividade_fisica_id", nullable = false)
     private AtividadeFisica atividadeFisica;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CodigoEmail> codigosEmail;
 

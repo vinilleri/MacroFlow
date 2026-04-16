@@ -1,10 +1,11 @@
 package com.tcc.macroflow.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cascade;
+
 
 import java.time.LocalDateTime;
 
@@ -18,6 +19,7 @@ public class CodigoEmail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     @Column(nullable = false)
     private String codigo;
 
@@ -29,7 +31,7 @@ public class CodigoEmail {
     @Column(nullable = false)
     private boolean usado;
 
-
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;

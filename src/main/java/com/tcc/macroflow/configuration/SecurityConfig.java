@@ -29,8 +29,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
                     .authorizeHttpRequests(auth -> auth
                             .requestMatchers(HttpMethod.POST, "/api/usuario").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/usuario/login").permitAll()
-                            .requestMatchers(HttpMethod.POST, "/api/usuario/codigoEmail").permitAll()
-                            .requestMatchers(HttpMethod.POST, "/api/usuario/verificarEmail/**").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/api/usuario/login/confirmar/**").permitAll()
                             .requestMatchers("/v3/api-docs/**").permitAll()
                             .requestMatchers("/swagger-ui/**").permitAll()
                             .requestMatchers("/swagger-ui.html").permitAll()

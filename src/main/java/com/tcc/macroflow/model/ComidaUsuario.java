@@ -1,5 +1,6 @@
 package com.tcc.macroflow.model;
 
+import com.tcc.macroflow.component.Icone;
 import jakarta.persistence.*;
 
 import lombok.AllArgsConstructor;
@@ -28,7 +29,9 @@ public class ComidaUsuario {
     private BigDecimal carboidrato;
     @Column(nullable = false)
     private BigDecimal gordura;
-
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Icone icone;
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;

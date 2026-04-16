@@ -7,6 +7,7 @@ import com.tcc.macroflow.model.Usuario;
 import com.tcc.macroflow.repository.AtividadeFisicaRepository;
 import com.tcc.macroflow.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,11 +49,11 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
     @Transactional
-    public Usuario editar(Long id, UsuarioDTO usuario) {
+    public Usuario editar( UsuarioDTO usuario) {
 
-        Usuario atualizado = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
-
+        Usuario atualizado = (Usuario) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
 
 
         atualizado.setNome(usuario.getNome());
@@ -79,8 +80,10 @@ public class UsuarioService {
 
     }
     @Transactional
-    public void deletar(Long usuarioid) {
-        Usuario usuario = usuarioRepository.findById(usuarioid).orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
+    public void deletar(){
+        Usuario usuario = (Usuario) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
         usuarioRepository.delete(usuario);
     }
 
@@ -96,8 +99,10 @@ public class UsuarioService {
         return usuarioRepository.findById(usuarioID).orElseThrow(() -> new RuntimeException("usuario não encontrado"));
     }
 
-    public void deslogar(Long usuarioID){
-        Usuario usuario = usuarioRepository.findById(usuarioID).orElseThrow(() -> new RuntimeException("usuario não encontrado"));
+    public void deslogar(){
+        Usuario usuario = (Usuario) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
         usuario.setAtivo(false);
 
         usuarioRepository.save(usuario);
