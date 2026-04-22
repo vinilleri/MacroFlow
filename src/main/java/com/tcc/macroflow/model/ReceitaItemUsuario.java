@@ -27,4 +27,7 @@ public class ReceitaItemUsuario {
         @ManyToOne
         @JoinColumn(name = "unidade_id", nullable = false)
         private Unidade unidade;
+
+        @Column(nullable = false)
+        private Integer quantidade = 0;
 }

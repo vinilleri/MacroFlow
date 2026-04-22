@@ -1,4 +1,49 @@
 package com.tcc.macroflow.controller;
 
+import com.tcc.macroflow.dto.ReceitaDTO;
+import com.tcc.macroflow.dto.ReceitaResponseDTO;
+import com.tcc.macroflow.service.ReceitaService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/receita")
+@CrossOrigin("*")
 public class ReceitaController {
+    private final ReceitaService service;
+
+    public ReceitaController(ReceitaService service) {
+        this.service = service;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReceitaDTO>> listarReceita(){
+        List<ReceitaDTO> lista = service.listarReceitaUsuario();
+        return ResponseEntity.ok(lista);
+    }
+
+    @PostMapping
+    public ResponseEntity<?> salvarReceita(@RequestBody ReceitaDTO receitaDTO){
+
+        ReceitaResponseDTO receita = service.salvar(receitaDTO);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(receita);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletarReceita(@PathVariable Long id){
+       try{
+        service.deletarReceita(id);
+        return ResponseEntity.noContent().build();
+       }
+        catch(Exception e){
+          return ResponseEntity.notFound().build();
+    }
+    }
+
+
+
 }

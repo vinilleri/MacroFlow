@@ -3,7 +3,6 @@ package com.tcc.macroflow.service;
 
 import com.tcc.macroflow.dto.ComidaDTO;
 import com.tcc.macroflow.dto.ComidaResponseDTO;
-import com.tcc.macroflow.dto.UsuarioDTO;
 import com.tcc.macroflow.model.Comida;
 import com.tcc.macroflow.model.ComidaUsuario;
 import com.tcc.macroflow.model.Usuario;
@@ -22,9 +21,11 @@ public class ComidaService {
 
 private final ComidaUsuarioRepository comidaUsuarioRepository;
 private final ComidaRepository comidaRepository;
-    public ComidaService(ComidaUsuarioRepository comidaRepository, ComidaRepository comidaRepository1) {
+private final AuthService authService;
+    public ComidaService(ComidaUsuarioRepository comidaRepository, ComidaRepository comidaRepository1, AuthService authService) {
         this.comidaUsuarioRepository = comidaRepository;
         this.comidaRepository = comidaRepository1;
+        this.authService = authService;
     }
 
     @Transactional
@@ -36,9 +37,7 @@ private final ComidaRepository comidaRepository;
         comidaUsuario.setGordura(comidaDTO.getGordura());
         comidaUsuario.setProteinas(comidaDTO.getProteinas());
         comidaUsuario.setIcone(comidaDTO.getIcone());
-        Usuario usuario = (Usuario) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
+        Usuario usuario = authService.getUsuario();
 
         ComidaUsuario comparacao = comidaUsuarioRepository.findByNomeIgnoreCaseAndUsuario(comidaUsuario.getNome(),usuario)
                 .orElse(null);

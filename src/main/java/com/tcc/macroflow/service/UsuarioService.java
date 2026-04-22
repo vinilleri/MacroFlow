@@ -7,7 +7,6 @@ import com.tcc.macroflow.model.Usuario;
 import com.tcc.macroflow.repository.AtividadeFisicaRepository;
 import com.tcc.macroflow.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,12 +17,14 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final AtividadeFisicaRepository atividadeFisicaRepository;
+    private  final AuthService authService;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, AtividadeFisicaRepository atividadeFisicaRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, AtividadeFisicaRepository atividadeFisicaRepository, AuthService authService) {
         this.usuarioRepository = usuarioRepository;
         this.atividadeFisicaRepository = atividadeFisicaRepository;
+        this.authService = authService;
     }
 
     @Transactional
@@ -51,9 +52,8 @@ public class UsuarioService {
     @Transactional
     public Usuario editar( UsuarioDTO usuario) {
 
-        Usuario atualizado = (Usuario) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
+
+        Usuario atualizado =  authService.getUsuario();
 
 
         atualizado.setNome(usuario.getNome());
@@ -81,9 +81,7 @@ public class UsuarioService {
     }
     @Transactional
     public void deletar(){
-        Usuario usuario = (Usuario) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
+        Usuario usuario = authService.getUsuario();
         usuarioRepository.delete(usuario);
     }
 
@@ -100,9 +98,7 @@ public class UsuarioService {
     }
 
     public void deslogar(){
-        Usuario usuario = (Usuario) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
+        Usuario usuario = authService.getUsuario();
         usuario.setAtivo(false);
 
         usuarioRepository.save(usuario);
