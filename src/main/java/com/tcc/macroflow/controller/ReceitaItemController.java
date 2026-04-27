@@ -32,19 +32,19 @@ public class ReceitaItemController {
         ReceitaItemDTO itemDTO = service.adicionarItem(dto,id);
         return ResponseEntity.status(HttpStatus.CREATED).body(itemDTO);
     }
-    @PutMapping("{itemId}")
+    @PutMapping("/{itemId}")
     public ResponseEntity<?> editarItensReceita(@RequestBody ReceitaItemRequestDTO dto, @PathVariable Long itemId,
                                                 @PathVariable Long id) {
-        ReceitaItemDTO itemDTO = service.atualizarItem(dto,itemId,id);
+        ReceitaItemDTO itemDTO = service.atualizarItem(dto,id,itemId);
 
         if(itemDTO == null){
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(itemDTO);
     }
-    @DeleteMapping("{itemId}")
-    public ResponseEntity<?> deletarReceita( @PathVariable Long itemId, @PathVariable Long id){
-        service.deletarItem(id,itemId);
+    @DeleteMapping("/{itemId}")
+    public ResponseEntity<?> deletarReceita( @RequestBody ReceitaItemRequestDTO dto, @PathVariable Long itemId, @PathVariable Long id){
+        service.deletarItem(dto,id,itemId);
         return ResponseEntity.noContent().build();
     }
 

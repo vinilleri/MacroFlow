@@ -27,7 +27,7 @@ public class Objetivo {
     @ManyToOne
     @JoinColumn(name = "tipo_objetivo_id", nullable = false)
     private TipoObjetivo tipoObjetivo;
-    @Column(nullable = false)
+    @Column
     private LocalDate dataFim;
 
 

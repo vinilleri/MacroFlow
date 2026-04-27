@@ -16,15 +16,10 @@ import java.time.LocalDateTime;
 
 public class Consumo {
 
-    public enum TipoConsumo{
-        RECEITA,
-        COMIDA,
-    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
@@ -33,7 +28,6 @@ public class Consumo {
     @Column(nullable = false)
     private LocalDateTime dataHora;
 
-    @Column(nullable = false)
-    private TipoConsumo tipoConsumo;
+
 
 }

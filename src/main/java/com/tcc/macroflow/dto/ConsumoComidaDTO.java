@@ -1,15 +1,15 @@
 package com.tcc.macroflow.dto;
 
-import com.tcc.macroflow.component.Origem;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
+
 @Data
-public class ReceitaItemRequestDTO {
-    private  Long comidaId;
+public class ConsumoComidaDTO {
+
+
+    private Long comidaId;
     private Long unidadeId;
     private BigDecimal quantidade;
-    private Origem origem;
 }
-

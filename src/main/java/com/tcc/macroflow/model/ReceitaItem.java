@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -28,6 +30,6 @@ public class ReceitaItem {
     private Unidade unidade;
 
     @Column(nullable = false)
-    private Integer quantidade = 0;
+    private BigDecimal quantidade;
 
 }

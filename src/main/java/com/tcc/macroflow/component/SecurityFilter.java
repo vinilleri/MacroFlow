@@ -26,37 +26,36 @@ public class SecurityFilter extends OncePerRequestFilter {
     private UsuarioRepository usuarioRepository;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = recuperarToken(request);
         String path = request.getRequestURI();
-        if(token != null){
-            String email = tokenService.validarToken(token);
+        if (path.startsWith("/api/login")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-            if(email != null){
-                Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
+        String token = recuperarToken(request);
 
-                if(usuario != null){
+        if (token != null) {
+            try {
+                String email = tokenService.validarToken(token);
 
-                    UsernamePasswordAuthenticationToken autenticacao =
-                            new UsernamePasswordAuthenticationToken(usuario,null, usuario.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(autenticacao);
+                if (email != null) {
+                    Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
 
-                    if (!usuario.isAtivo() &&
-                            !path.contains("/login") &&
-                            !path.contains("/codigoEmail") &&
-                            !path.contains("/verificarEmail")) {
-                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                        return;
+                    if (usuario != null) {
+                        var auth = new UsernamePasswordAuthenticationToken(
+                                usuario, null, usuario.getAuthorities()
+                        );
+
+                        SecurityContextHolder.getContext().setAuthentication(auth);
                     }
                 }
+
+            } catch (Exception e) {
 
             }
         }
 
-
-            filterChain.doFilter(request,response);
-
-
-
+        filterChain.doFilter(request, response);
     }
 
     private String recuperarToken (HttpServletRequest request){

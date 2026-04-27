@@ -8,8 +8,6 @@ import com.tcc.macroflow.model.ComidaUsuario;
 import com.tcc.macroflow.model.Usuario;
 import com.tcc.macroflow.repository.ComidaRepository;
 import com.tcc.macroflow.repository.ComidaUsuarioRepository;
-
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,9 +63,7 @@ private final AuthService authService;
                 () -> new RuntimeException("Comida  não encontrada")
         );
 
-        Usuario usuario = (Usuario) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
+        Usuario usuario = authService.getUsuario();
 
         if(comidaUsuario.getUsuario().getId().equals(usuario.getId())) {
             comidaUsuarioRepository.delete(comidaUsuario);
@@ -111,9 +107,7 @@ private final AuthService authService;
     }
 
     public List<ComidaResponseDTO> listarComidaUsuario(){
-        Usuario usuario = (Usuario) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
+        Usuario usuario = authService.getUsuario();
         List<ComidaUsuario> lista = comidaUsuarioRepository.findAllByUsuarioId(usuario.getId());
 
        return lista.stream()

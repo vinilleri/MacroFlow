@@ -18,7 +18,7 @@ public class ReceitaItemDTO {
 
     private String unidade;
 
-    private Integer quantidade = 0;
+    private BigDecimal quantidade;
 
     private Origem origem;
 

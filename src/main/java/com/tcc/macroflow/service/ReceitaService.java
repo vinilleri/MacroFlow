@@ -7,6 +7,7 @@ import com.tcc.macroflow.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -115,8 +116,8 @@ public class ReceitaService {
     }
 
     @Transactional
-    public ReceitaItem adicionarItemSistema(Long comidaId,Receita receita, Unidade unidade, Integer quantidade){
-        if(quantidade <=0){
+    public ReceitaItem adicionarItemSistema(Long comidaId,Receita receita, Unidade unidade, BigDecimal quantidade){
+        if(quantidade.compareTo(BigDecimal.ZERO) <= 0){
             throw new RuntimeException("quantidade invalida");
         }
 
@@ -128,7 +129,7 @@ public class ReceitaService {
 
         if(buscaItem.isPresent()){
             ReceitaItem atualizado = buscaItem.get();
-            Integer quantidadeNova = atualizado.getQuantidade()+quantidade;
+            BigDecimal quantidadeNova = atualizado.getQuantidade().add(quantidade);
             atualizado.setQuantidade(quantidadeNova);
             return itemRepository.save(atualizado);
         }
@@ -148,8 +149,8 @@ public class ReceitaService {
 
 
     @Transactional
-    public ReceitaItemUsuario adicionarItemUsuario(Long comidaUsuarioId,Receita receita, Unidade unidade, Integer quantidade ){
-        if(quantidade <=0){
+    public ReceitaItemUsuario adicionarItemUsuario(Long comidaUsuarioId,Receita receita, Unidade unidade, BigDecimal quantidade ){
+        if(quantidade.compareTo(BigDecimal.ZERO) <= 0){
             throw new RuntimeException("quantidade invalida");
         }
 
@@ -162,12 +163,12 @@ public class ReceitaService {
             throw new RuntimeException("comida não pertence a usuário");
         }
 
-        Optional<ReceitaItemUsuario> buscaItem = receitaItemUsuarioRepository.findByComidaUsuarioAndReceitaAndUnidade(
+        Optional<ReceitaItemUsuario> buscaItem = receitaItemUsuarioRepository.findByComidaAndReceitaAndUnidade(
                 comida,receita,unidade);
 
         if(buscaItem.isPresent()){
             ReceitaItemUsuario atualizado = buscaItem.get();
-            Integer quantidadeNova = atualizado.getQuantidade()+quantidade;
+            BigDecimal quantidadeNova = atualizado.getQuantidade().add(quantidade);
             atualizado.setQuantidade(quantidadeNova);
             return receitaItemUsuarioRepository.save(atualizado);
         }
@@ -184,6 +185,7 @@ public class ReceitaService {
 
     }
     public ReceitaItemDTO atualizarItem(ReceitaItemRequestDTO dto, Long receitaId,Long id){
+        if(dto.getOrigem() == null){throw  new RuntimeException("Origem não pode ser nula");}
 
         if (Origem.SISTEMA.equals(dto.getOrigem())) {
             ReceitaItem receitaItem =   atualizarItemSistema(id,dto.getQuantidade(),receitaId);
@@ -205,11 +207,11 @@ public class ReceitaService {
     }
 
     @Transactional
-    public ReceitaItem atualizarItemSistema(Long id, Integer quantidadeNova, Long receitaId){
+    public ReceitaItem atualizarItemSistema(Long id, BigDecimal quantidadeNova, Long receitaId){
 
         ReceitaItem item = buscarReceitaItem(id,receitaId);
 
-        if(quantidadeNova <= 0){
+        if(quantidadeNova.compareTo(BigDecimal.ZERO) <= 0){
            itemRepository.delete(item);
             return null;
         }
@@ -219,10 +221,10 @@ public class ReceitaService {
 
     }
     @Transactional
-    public ReceitaItemUsuario atualizarItemUsuario(Long id, Integer quantidadeNova, Long receitaId){
+    public ReceitaItemUsuario atualizarItemUsuario(Long id, BigDecimal quantidadeNova, Long receitaId){
 
         ReceitaItemUsuario item = buscarReceitaItemUsuario(id,receitaId);
-        if(quantidadeNova <= 0){
+        if(quantidadeNova.compareTo(BigDecimal.ZERO) <= 0){
             receitaItemUsuarioRepository.delete(item);
             return null;
         }
@@ -233,15 +235,14 @@ public class ReceitaService {
     }
 
 
-    public void deletarItem( Long receitaId,Long id){
-        Optional<ReceitaItem> receitaItem = itemRepository.findById(id);
+    public void deletarItem( ReceitaItemRequestDTO dto,Long receitaId,Long id){
+        if(dto.getOrigem() == null){throw  new RuntimeException("Origem não pode ser nula");}
 
-        if(receitaItem.isPresent()){
+
+        if (Origem.SISTEMA.equals(dto.getOrigem())) {
             deletarItemSistema(id,receitaId);
         }
-
-        Optional<ReceitaItemUsuario> receitaItemUsuario = receitaItemUsuarioRepository.findById(id);
-        if(receitaItemUsuario.isPresent()){
+        if (Origem.USUARIO.equals(dto.getOrigem())) {
             deletarItemUsuario(id,receitaId);
         }
 
