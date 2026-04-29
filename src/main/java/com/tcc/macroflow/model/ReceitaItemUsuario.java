@@ -26,9 +26,6 @@ public class ReceitaItemUsuario {
         private Receita receita;
 
 
-        @ManyToOne
-        @JoinColumn(name = "unidade_id", nullable = false)
-        private Unidade unidade;
 
         @Column(nullable = false)
         private BigDecimal quantidade;

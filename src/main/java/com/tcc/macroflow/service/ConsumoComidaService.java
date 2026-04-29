@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,13 +23,13 @@ public class ConsumoComidaService {
     private final ConsumoRepository consumoRepository;
     private final AuthService authService;
     private final ComidaRepository comidaRepository;
-    private final UnidadeRepository unidadeRepository;
-    public ConsumoComidaService(ConsumoComidaRepository consumoComidaRepository, ConsumoRepository consumoRepository, AuthService authService, ComidaRepository comidaRepository, UnidadeRepository unidadeRepository) {
+
+    public ConsumoComidaService(ConsumoComidaRepository consumoComidaRepository, ConsumoRepository consumoRepository, AuthService authService, ComidaRepository comidaRepository) {
         this.consumoComidaRepository = consumoComidaRepository;
         this.consumoRepository = consumoRepository;
         this.authService = authService;
         this.comidaRepository = comidaRepository;
-        this.unidadeRepository = unidadeRepository;
+
     }
 
     @Transactional
@@ -46,17 +47,17 @@ public class ConsumoComidaService {
         Comida comida = comidaRepository.findById(dto.getComidaId()).orElseThrow(
                 () -> new RuntimeException("Comida não encontrada")
         );
+
         consumoComida.setComida(comida);
         consumoComida.setConsumo(consumo);
-        Unidade unidade = unidadeRepository.findById(dto.getUnidadeId()).orElseThrow(
-                () -> new RuntimeException("Unidade não encontrada")
-        );
-        consumoComida.setUnidade(unidade);
-        consumoComida.setQuantidade(dto.getQuantidade());
+
+        BigDecimal base = comida.getValor().divide(comida.getUnidade().getBase(),2, RoundingMode.HALF_UP);
+        BigDecimal quantidadeFinal = dto.getQuantidade().multiply(base);
+        consumoComida.setQuantidade(quantidadeFinal);
 
         consumoComidaRepository.save(consumoComida);
 
-        return new ConsumoComidaResponseDTO(consumo.getId(), comida.getId(),consumoComida.getQuantidade(), unidade.getId());
+        return new ConsumoComidaResponseDTO(consumo.getId(), comida.getId(),consumoComida.getQuantidade());
     }
 
 
@@ -74,14 +75,14 @@ public class ConsumoComidaService {
                     () -> new RuntimeException("Comida não encontrada")
             );
             atualizado.setComida(comida);
-            atualizado.setQuantidade(dto.getQuantidade());
-            Unidade unidade = unidadeRepository.findById(dto.getUnidadeId()).orElseThrow(
-                    () -> new RuntimeException("Unidade não encontrada")
-            );
-            atualizado.setUnidade(unidade);
+
+            BigDecimal base = comida.getValor().divide(comida.getUnidade().getBase(),2, RoundingMode.HALF_UP);
+            BigDecimal quantidadeFinal = dto.getQuantidade().multiply(base);
+            atualizado.setQuantidade(quantidadeFinal);
+
             consumoComidaRepository.save(atualizado);
             return new ConsumoComidaResponseDTO(atualizado.getConsumo().getId(),
-                    atualizado.getComida().getId(), atualizado.getQuantidade(), atualizado.getUnidade().getId());
+                    atualizado.getComida().getId(), atualizado.getQuantidade());
         }
         else throw  new RuntimeException("Consumo não pertence a esse usuário");
     }

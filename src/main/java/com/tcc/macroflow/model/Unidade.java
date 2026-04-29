@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -20,5 +22,6 @@ public class Unidade {
     @Column(nullable = false)
     private String sigla;
 
-
+    @Column(nullable = false)
+    private BigDecimal base;
 }

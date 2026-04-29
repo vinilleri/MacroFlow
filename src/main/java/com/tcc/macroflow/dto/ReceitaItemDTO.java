@@ -16,7 +16,7 @@ public class ReceitaItemDTO {
 
     private String nome;
 
-    private String unidade;
+
 
     private BigDecimal quantidade;
 

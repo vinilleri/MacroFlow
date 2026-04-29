@@ -31,4 +31,9 @@ public class Comida {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Icone icone;
+    @ManyToOne
+    @JoinColumn(name = "unidade_id", nullable = false)
+    private Unidade unidade;
+    @Column(nullable = false)
+    private BigDecimal valor;
 }

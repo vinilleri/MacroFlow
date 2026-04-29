@@ -18,5 +18,4 @@ public class ConsumoComidaResponseDTO {
 
     private BigDecimal quantidade;
 
-    private Long unidadeId;
 }

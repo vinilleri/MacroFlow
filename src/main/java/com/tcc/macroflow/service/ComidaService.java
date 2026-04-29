@@ -5,9 +5,11 @@ import com.tcc.macroflow.dto.ComidaDTO;
 import com.tcc.macroflow.dto.ComidaResponseDTO;
 import com.tcc.macroflow.model.Comida;
 import com.tcc.macroflow.model.ComidaUsuario;
+import com.tcc.macroflow.model.Unidade;
 import com.tcc.macroflow.model.Usuario;
 import com.tcc.macroflow.repository.ComidaRepository;
 import com.tcc.macroflow.repository.ComidaUsuarioRepository;
+import com.tcc.macroflow.repository.UnidadeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,10 +22,12 @@ public class ComidaService {
 private final ComidaUsuarioRepository comidaUsuarioRepository;
 private final ComidaRepository comidaRepository;
 private final AuthService authService;
-    public ComidaService(ComidaUsuarioRepository comidaRepository, ComidaRepository comidaRepository1, AuthService authService) {
+private final UnidadeRepository unidadeRepository;
+    public ComidaService(ComidaUsuarioRepository comidaRepository, ComidaRepository comidaRepository1, AuthService authService, UnidadeRepository unidadeRepository) {
         this.comidaUsuarioRepository = comidaRepository;
         this.comidaRepository = comidaRepository1;
         this.authService = authService;
+        this.unidadeRepository = unidadeRepository;
     }
 
     @Transactional
@@ -35,6 +39,7 @@ private final AuthService authService;
         comidaUsuario.setGordura(comidaDTO.getGordura());
         comidaUsuario.setProteinas(comidaDTO.getProteinas());
         comidaUsuario.setIcone(comidaDTO.getIcone());
+        comidaUsuario.setValor(comidaDTO.getValor());
         Usuario usuario = authService.getUsuario();
 
         ComidaUsuario comparacao = comidaUsuarioRepository.findByNomeIgnoreCaseAndUsuario(comidaUsuario.getNome(),usuario)
@@ -44,7 +49,11 @@ private final AuthService authService;
             throw new RuntimeException("Comida já criada");
         }
 
+        Unidade unidade = unidadeRepository.findById(comidaDTO.getUnidadeId()).orElseThrow(
+                () -> new RuntimeException("Unidade não encontrada")
+        );
         comidaUsuario.setUsuario(usuario);
+        comidaUsuario.setUnidade(unidade);
         comidaUsuarioRepository.save(comidaUsuario);
 
 
@@ -84,11 +93,16 @@ private final AuthService authService;
                         throw new RuntimeException("Comida já criada");
                     }
                 }
+        Unidade unidade = unidadeRepository.findById(comida.getUnidadeId()).orElseThrow(
+                () -> new RuntimeException("Unidade não encontrada")
+        );
         atualizado.setNome(comida.getNome());
         atualizado.setCarboidrato(comida.getCarboidrato());
         atualizado.setProteinas(comida.getProteinas());
         atualizado.setGordura(comida.getGordura());
         atualizado.setCalorias(comida.getCalorias());
+        atualizado.setUnidade(unidade);
+        atualizado.setValor(comida.getValor());
         comidaUsuarioRepository.save(atualizado);
         return new ComidaResponseDTO(atualizado.getId(),
                 atualizado.getNome(),

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 @Service
@@ -17,15 +18,14 @@ public class ConsumoComidaUsuarioService {
         private final ConsumoRepository consumoRepository;
         private final AuthService authService;
         private final ComidaUsuarioRepository comidaUsuarioRepository;
-        private final UnidadeRepository unidadeRepository;
+
         public ConsumoComidaUsuarioService(ConsumoComidaUsuarioRepository consumoComidaUsuarioRepositoryRepository,
                                            ConsumoRepository consumoRepository, AuthService authService,
-                                           ComidaUsuarioRepository comidaUsuarioRepository, UnidadeRepository unidadeRepository) {
+                                           ComidaUsuarioRepository comidaUsuarioRepository) {
             this.consumoComidaUsuarioRepository = consumoComidaUsuarioRepositoryRepository;
             this.consumoRepository = consumoRepository;
             this.authService = authService;
             this.comidaUsuarioRepository = comidaUsuarioRepository;
-            this.unidadeRepository = unidadeRepository;
         }
 
         @Transactional
@@ -49,15 +49,14 @@ public class ConsumoComidaUsuarioService {
             }
             consumoComidaUsuario.setComidaUsuario(comidaUsuario);
             consumoComidaUsuario.setConsumo(consumo);
-            Unidade unidade = unidadeRepository.findById(dto.getUnidadeId()).orElseThrow(
-                    () -> new RuntimeException("Unidade não encontrada")
-            );
-            consumoComidaUsuario.setUnidade(unidade);
-            consumoComidaUsuario.setQuantidade(dto.getQuantidade());
+
+            BigDecimal base = comidaUsuario.getValor().divide(comidaUsuario.getUnidade().getBase(),2, RoundingMode.HALF_UP);
+            BigDecimal quantidadeFinal = dto.getQuantidade().multiply(base);
+            consumoComidaUsuario.setQuantidade(quantidadeFinal);
 
             consumoComidaUsuarioRepository.save(consumoComidaUsuario);
 
-            return new ConsumoComidaResponseDTO(consumo.getId(), comidaUsuario.getId(),consumoComidaUsuario.getQuantidade(), unidade.getId());
+            return new ConsumoComidaResponseDTO(consumo.getId(), comidaUsuario.getId(),consumoComidaUsuario.getQuantidade());
         }
 
 
@@ -78,14 +77,13 @@ public class ConsumoComidaUsuarioService {
                     throw  new RuntimeException("Comida não pertence a esse usuário");
                 }
                 atualizado.setComidaUsuario(comidaUsuario);
-                atualizado.setQuantidade(dto.getQuantidade());
-                Unidade unidade = unidadeRepository.findById(dto.getUnidadeId()).orElseThrow(
-                        () -> new RuntimeException("Unidade não encontrada")
-                );
-                atualizado.setUnidade(unidade);
+                BigDecimal base = comidaUsuario.getValor().divide(comidaUsuario.getUnidade().getBase(),2, RoundingMode.HALF_UP);
+                BigDecimal quantidadeFinal = dto.getQuantidade().multiply(base);
+                atualizado.setQuantidade(quantidadeFinal);
+
                 consumoComidaUsuarioRepository.save(atualizado);
                 return new ConsumoComidaResponseDTO(atualizado.getConsumo().getId(),
-                        atualizado.getComidaUsuario().getId(), atualizado.getQuantidade(), atualizado.getUnidade().getId());
+                        atualizado.getComidaUsuario().getId(), atualizado.getQuantidade());
             }
             else throw  new RuntimeException("Consumo não pertence a esse usuário");
         }

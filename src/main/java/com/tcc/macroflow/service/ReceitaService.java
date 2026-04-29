@@ -18,17 +18,16 @@ public class ReceitaService {
     private final ReceitaRepository receitaRepository;
     private final ReceitaItemRepository itemRepository;
     private final ComidaRepository comidaRepository;
-    private final UnidadeRepository unidadeRepository;
     private final ComidaUsuarioRepository comidaUsuarioRepository;
     private final ReceitaItemUsuarioRepository receitaItemUsuarioRepository;
     private final AuthService authService;
-    public ReceitaService(ReceitaRepository receitaRepository, ReceitaItemRepository itemRepository, ComidaRepository comidaRepository,
-                          UnidadeRepository unidadeRepository, ComidaUsuarioRepository comidaUsuarioRepository,
+    public ReceitaService(ReceitaRepository receitaRepository, ReceitaItemRepository itemRepository,
+                          ComidaRepository comidaRepository, ComidaUsuarioRepository comidaUsuarioRepository,
                           ReceitaItemUsuarioRepository receitaItemUsuarioRepository, AuthService authService) {
         this.receitaRepository = receitaRepository;
         this.itemRepository = itemRepository;
         this.comidaRepository = comidaRepository;
-        this.unidadeRepository = unidadeRepository;
+
         this.comidaUsuarioRepository = comidaUsuarioRepository;
 
         this.receitaItemUsuarioRepository = receitaItemUsuarioRepository;
@@ -57,13 +56,7 @@ public class ReceitaService {
         }
         return receita;
     }
-    private Unidade buscarUnidade(Long unidadeId){
 
-    return  unidadeRepository.findById(unidadeId).orElseThrow(
-                () -> new RuntimeException("Unidade não existente")
-    );
-
-    }
 
     private ReceitaItem buscarReceitaItem(Long id,Long receitaId){
 
@@ -94,20 +87,17 @@ public class ReceitaService {
        if(dto.getOrigem() == null){throw  new RuntimeException("Origem não pode ser nula");}
 
            Receita receita = buscarReceitaUsuario(receitaId);
-           Unidade unidade = buscarUnidade(dto.getUnidadeId());
 
            if (Origem.SISTEMA.equals(dto.getOrigem())) {
-               ReceitaItem receitaItem = adicionarItemSistema(dto.getComidaId(), receita, unidade, dto.getQuantidade());
+               ReceitaItem receitaItem = adicionarItemSistema(dto.getComidaId(), receita, dto.getQuantidade());
                return new ReceitaItemDTO(receitaItem.getComida().getCalorias(),
                        receitaItem.getComida().getNome(),
-                       receitaItem.getUnidade().getNome(),
                        receitaItem.getQuantidade(),
                        Origem.SISTEMA);
            } else {
-               ReceitaItemUsuario receitaItem = adicionarItemUsuario(dto.getComidaId(), receita, unidade, dto.getQuantidade());
+               ReceitaItemUsuario receitaItem = adicionarItemUsuario(dto.getComidaId(), receita, dto.getQuantidade());
                return new ReceitaItemDTO(receitaItem.getComida().getCalorias(),
                        receitaItem.getComida().getNome(),
-                       receitaItem.getUnidade().getNome(),
                        receitaItem.getQuantidade(),
                        Origem.USUARIO);
            }
@@ -116,7 +106,7 @@ public class ReceitaService {
     }
 
     @Transactional
-    public ReceitaItem adicionarItemSistema(Long comidaId,Receita receita, Unidade unidade, BigDecimal quantidade){
+    public ReceitaItem adicionarItemSistema(Long comidaId,Receita receita, BigDecimal quantidade){
         if(quantidade.compareTo(BigDecimal.ZERO) <= 0){
             throw new RuntimeException("quantidade invalida");
         }
@@ -125,7 +115,7 @@ public class ReceitaService {
                 () -> new RuntimeException("Comida não existente")
         );
 
-        Optional<ReceitaItem> buscaItem = itemRepository.findByComidaAndReceitaAndUnidade(comida,receita,unidade);
+        Optional<ReceitaItem> buscaItem = itemRepository.findByComidaAndReceita(comida,receita);
 
         if(buscaItem.isPresent()){
             ReceitaItem atualizado = buscaItem.get();
@@ -139,7 +129,6 @@ public class ReceitaService {
         item.setReceita(receita);
         item.setQuantidade(quantidade);
         item.setComida(comida);
-        item.setUnidade(unidade);
 
 
         return itemRepository.save(item);
@@ -149,7 +138,7 @@ public class ReceitaService {
 
 
     @Transactional
-    public ReceitaItemUsuario adicionarItemUsuario(Long comidaUsuarioId,Receita receita, Unidade unidade, BigDecimal quantidade ){
+    public ReceitaItemUsuario adicionarItemUsuario(Long comidaUsuarioId,Receita receita, BigDecimal quantidade ){
         if(quantidade.compareTo(BigDecimal.ZERO) <= 0){
             throw new RuntimeException("quantidade invalida");
         }
@@ -163,8 +152,7 @@ public class ReceitaService {
             throw new RuntimeException("comida não pertence a usuário");
         }
 
-        Optional<ReceitaItemUsuario> buscaItem = receitaItemUsuarioRepository.findByComidaAndReceitaAndUnidade(
-                comida,receita,unidade);
+        Optional<ReceitaItemUsuario> buscaItem = receitaItemUsuarioRepository.findByComidaAndReceita(comida,receita);
 
         if(buscaItem.isPresent()){
             ReceitaItemUsuario atualizado = buscaItem.get();
@@ -178,7 +166,6 @@ public class ReceitaService {
         item.setReceita(receita);
         item.setQuantidade(quantidade);
         item.setComida(comida);
-        item.setUnidade(unidade);
 
 
         return receitaItemUsuarioRepository.save(item);
@@ -191,7 +178,6 @@ public class ReceitaService {
             ReceitaItem receitaItem =   atualizarItemSistema(id,dto.getQuantidade(),receitaId);
             return new ReceitaItemDTO(receitaItem.getComida().getCalorias(),
                     receitaItem.getComida().getNome(),
-                    receitaItem.getUnidade().getNome(),
                     receitaItem.getQuantidade(),
                     Origem.SISTEMA);
         }
@@ -199,7 +185,6 @@ public class ReceitaService {
            ReceitaItemUsuario receitaItem= atualizarItemUsuario(id,dto.getQuantidade(),receitaId);
             return new ReceitaItemDTO(receitaItem.getComida().getCalorias(),
                     receitaItem.getComida().getNome(),
-                    receitaItem.getUnidade().getNome(),
                     receitaItem.getQuantidade(),
                     Origem.USUARIO);
         }
@@ -266,7 +251,6 @@ public class ReceitaService {
                 .map((receitaItem) -> new ReceitaItemDTO(
                         receitaItem.getComida().getCalorias(),
                         receitaItem.getComida().getNome(),
-                        receitaItem.getUnidade().getNome(),
                         receitaItem.getQuantidade(),
                         Origem.SISTEMA
                 ))
@@ -278,7 +262,6 @@ public class ReceitaService {
                 .map((receitaItemUsuario) -> new ReceitaItemDTO(
                         receitaItemUsuario.getComida().getCalorias(),
                         receitaItemUsuario.getComida().getNome(),
-                        receitaItemUsuario.getUnidade().getNome(),
                         receitaItemUsuario.getQuantidade(),
                         Origem.USUARIO
                 ))

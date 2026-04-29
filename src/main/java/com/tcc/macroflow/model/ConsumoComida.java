@@ -29,7 +29,5 @@ public class ConsumoComida {
     private BigDecimal quantidade;
 
 
-    @ManyToOne
-    @JoinColumn(name = "unidade_id", nullable = false)
-    private Unidade unidade;
+
 }

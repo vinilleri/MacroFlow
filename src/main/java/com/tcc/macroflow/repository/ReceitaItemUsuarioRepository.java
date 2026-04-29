@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface ReceitaItemUsuarioRepository extends JpaRepository<ReceitaItemUsuario,Long> {
 
 
-    Optional<ReceitaItemUsuario> findByComidaAndReceitaAndUnidade(ComidaUsuario comida, Receita receita, Unidade unidade);
+    Optional<ReceitaItemUsuario> findByComidaAndReceita(ComidaUsuario comida, Receita receita);
     List<ReceitaItemUsuario> findAllByReceitaId(Long id);
     void deleteAllByReceitaId(Long receitaId);
 }

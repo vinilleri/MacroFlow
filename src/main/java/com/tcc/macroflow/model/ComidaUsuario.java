@@ -35,4 +35,9 @@ public class ComidaUsuario {
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
+    @ManyToOne
+    @JoinColumn(name = "unidade_id", nullable = false)
+    private Unidade unidade;
+    @Column(nullable = false)
+    private BigDecimal valor;
 }
