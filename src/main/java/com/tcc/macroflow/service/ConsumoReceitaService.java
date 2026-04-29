@@ -1,99 +1,96 @@
 package com.tcc.macroflow.service;
 
-import com.tcc.macroflow.dto.ConsumoComidaDTO;
-import com.tcc.macroflow.dto.ConsumoComidaResponseDTO;
+import com.tcc.macroflow.dto.ConsumoReceitaDTO;
+import com.tcc.macroflow.dto.ConsumoReceitaResponseDTO;
 import com.tcc.macroflow.model.*;
 import com.tcc.macroflow.repository.*;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
+@Service
 public class ConsumoReceitaService {
 
-    private final ConsumoComidaRepository consumoComidaRepository;
+    private final ConsumoReceitaRepository consumoReceitaRepository;
     private final ConsumoRepository consumoRepository;
     private final AuthService authService;
-    private final ComidaRepository comidaRepository;
     private final ReceitaRepository receitaRepository;
-    private final ReceitaItemRepository itemRepository;
-    private final UnidadeRepository unidadeRepository;
-    public ConsumoReceitaService(ConsumoComidaRepository consumoComidaRepository, ConsumoRepository consumoRepository, AuthService authService, ComidaRepository comidaRepository, ReceitaRepository receitaRepository, ReceitaItemRepository itemRepository, UnidadeRepository unidadeRepository) {
-        this.consumoComidaRepository = consumoComidaRepository;
+
+    public ConsumoReceitaService( ConsumoRepository consumoRepository,
+                                 AuthService authService, ConsumoReceitaRepository consumoReceitaRepository
+                               , ReceitaRepository receitaRepository) {
+        this.consumoReceitaRepository = consumoReceitaRepository;
         this.consumoRepository = consumoRepository;
         this.authService = authService;
-        this.comidaRepository = comidaRepository;
         this.receitaRepository = receitaRepository;
-        this.itemRepository = itemRepository;
-        this.unidadeRepository = unidadeRepository;
     }
 
     @Transactional
-    public ConsumoComidaResponseDTO consumirReceita(ConsumoComidaDTO dto){
+    public ConsumoReceitaResponseDTO consumirReceita(ConsumoReceitaDTO dto){
         if(dto.getQuantidade().compareTo(BigDecimal.ZERO) <= 0){
             throw new RuntimeException("quantidade invalida");
         }
+        Usuario usuario = authService.getUsuario();
         Consumo consumo = new Consumo();
         consumo.setDataHora(LocalDateTime.now());
-        consumo.setUsuario(authService.getUsuario());
+        consumo.setUsuario(usuario);
 
         consumoRepository.save(consumo);
 
-        ConsumoComida consumoComida = new ConsumoComida();
-        Comida comida = comidaRepository.findById(dto.getComidaId()).orElseThrow(
-                () -> new RuntimeException("Comida não encontrada")
+        ConsumoReceita consumoReceita = new ConsumoReceita();
+        Receita receita = receitaRepository.findById(dto.getReceitaId()).orElseThrow(
+                () -> new RuntimeException("Receita não encontrada")
         );
-        consumoComida.setComida(comida);
-        consumoComida.setConsumo(consumo);
-        Unidade unidade = unidadeRepository.findById(dto.getUnidadeId()).orElseThrow(
-                () -> new RuntimeException("Unidade não encontrada")
-        );
-        consumoComida.setUnidade(unidade);
-        consumoComida.setQuantidade(dto.getQuantidade());
 
-        consumoComidaRepository.save(consumoComida);
+        if(!receita.getUsuario().getId().equals(usuario.getId())){
+           throw  new RuntimeException("Receita não pertence a esse usuário");
+        }
+        consumoReceita.setReceita(receita);
+        consumoReceita.setConsumo(consumo);
+        consumoReceita.setQuantidade(dto.getQuantidade());
+        consumoReceitaRepository.save(consumoReceita);
 
-        return new ConsumoComidaResponseDTO(consumo.getId(), comida.getId(),consumoComida.getQuantidade(), unidade.getId());
+        return new ConsumoReceitaResponseDTO(consumo.getId(), receita.getId(),consumoReceita.getQuantidade());
     }
 
 
     @Transactional
-    public ConsumoComidaResponseDTO atualizarConsumirReceita(ConsumoComidaDTO dto, Long id){
+    public ConsumoReceitaResponseDTO atualizarConsumirReceita(ConsumoReceitaDTO dto, Long id){
         if(dto.getQuantidade().compareTo(BigDecimal.ZERO) <= 0){
             throw new RuntimeException("quantidade invalida");
         }
-        ConsumoComida atualizado = consumoComidaRepository.findById(id).orElseThrow(
+        ConsumoReceita atualizado = consumoReceitaRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Consumo não encontrado")
         );
         Usuario usuario = authService.getUsuario();
         if(atualizado.getConsumo().getUsuario().getId().equals(usuario.getId())) {
-            Comida comida = comidaRepository.findById(dto.getComidaId()).orElseThrow(
-                    () -> new RuntimeException("Comida não encontrada")
+            Receita receita = receitaRepository.findById(dto.getReceitaId()).orElseThrow(
+                    () -> new RuntimeException("Receita não encontrada")
             );
-            atualizado.setComida(comida);
+            if(!receita.getUsuario().getId().equals(usuario.getId())){
+                throw  new RuntimeException("Receita não pertence a esse usuário");
+            }
+            atualizado.setReceita(receita);
             atualizado.setQuantidade(dto.getQuantidade());
-            Unidade unidade = unidadeRepository.findById(dto.getUnidadeId()).orElseThrow(
-                    () -> new RuntimeException("Unidade não encontrada")
-            );
-            atualizado.setUnidade(unidade);
-            consumoComidaRepository.save(atualizado);
-            return new ConsumoComidaResponseDTO(atualizado.getConsumo().getId(),
-                    atualizado.getComida().getId(), atualizado.getQuantidade(), atualizado.getUnidade().getId());
+            consumoReceitaRepository.save(atualizado);
+            return new ConsumoReceitaResponseDTO(atualizado.getConsumo().getId(),
+                    atualizado.getReceita().getId(), atualizado.getQuantidade());
         }
         else throw  new RuntimeException("Consumo não pertence a esse usuário");
     }
 
     @Transactional
-    public void deletarConsumoReceita(Long consumoComidaId) {
+    public void deletarConsumoReceita(Long consumoReceitaId) {
         Usuario usuario = authService.getUsuario();
-        ConsumoComida consumoComida = consumoComidaRepository.findById(consumoComidaId).orElseThrow(
-                () -> new RuntimeException("Consumo comida não encontrado")
+        ConsumoReceita consumoReceita = consumoReceitaRepository.findById(consumoReceitaId).orElseThrow(
+                () -> new RuntimeException("Consumo receita não encontrado")
         );
-        Consumo consumo = consumoComida.getConsumo();
-        if(consumoComida.getConsumo().getUsuario().getId().equals(usuario.getId())) {
-            int quantidade = consumoComidaRepository.countByConsumoId(consumo.getId());
+        Consumo consumo = consumoReceita.getConsumo();
+        if(consumoReceita.getConsumo().getUsuario().getId().equals(usuario.getId())) {
+            int quantidade = consumoReceitaRepository.countByConsumoId(consumo.getId());
 
-            consumoComidaRepository.delete(consumoComida);
+            consumoReceitaRepository.delete(consumoReceita);
 
             if (quantidade <= 1) {
                 consumoRepository.delete(consumo);

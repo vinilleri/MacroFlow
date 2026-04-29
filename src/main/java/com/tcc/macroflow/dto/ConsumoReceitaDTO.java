@@ -1,12 +1,12 @@
 package com.tcc.macroflow.dto;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import lombok.Data;
 
+import java.math.BigDecimal;
+
+@Data
 public class ConsumoReceitaDTO {
 
-    private LocalDateTime dataHora;
     private Long receitaId;
-    private Long unidadeId;
     private BigDecimal quantidade;
 }
