@@ -1,6 +1,7 @@
 package com.tcc.macroflow.controller;
 
 
+import com.tcc.macroflow.component.Origem;
 import com.tcc.macroflow.dto.ReceitaItemDTO;
 import com.tcc.macroflow.dto.ReceitaItemRequestDTO;
 import com.tcc.macroflow.service.ReceitaService;
@@ -43,8 +44,8 @@ public class ReceitaItemController {
         return ResponseEntity.ok(itemDTO);
     }
     @DeleteMapping("/{itemId}")
-    public ResponseEntity<?> deletarReceita( @RequestBody ReceitaItemRequestDTO dto, @PathVariable Long itemId, @PathVariable Long id){
-        service.deletarItem(dto,id,itemId);
+    public ResponseEntity<?> deletarItemReceita(@RequestParam Origem origem, @PathVariable Long itemId, @PathVariable Long id){
+        service.deletarItem(origem,id,itemId);
         return ResponseEntity.noContent().build();
     }
 

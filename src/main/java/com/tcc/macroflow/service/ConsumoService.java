@@ -5,6 +5,7 @@ import com.tcc.macroflow.dto.ConsumoItemDTO;
 import com.tcc.macroflow.dto.MacroDTO;
 import com.tcc.macroflow.model.*;
 import com.tcc.macroflow.repository.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -112,7 +113,9 @@ public class ConsumoService {
             totalCarboidrato = totalCarboidrato.add(comida.getCarboidrato().multiply(quantidade).multiply(i.getQuantidade()));
         return new MacroDTO(totalCaloria,totalProteina,totalCarboidrato,totalGordura);
 
+
     }
+
     private MacroDTO somarMacrosUsuario(ReceitaItemUsuario i,BigDecimal quantidade){
         ComidaUsuario comida = i.getComida();
         BigDecimal totalCaloria = BigDecimal.ZERO;
@@ -159,6 +162,7 @@ public class ConsumoService {
                 .toList();
         }
 
+
         public MacroDTO somarConsumoDia(){
             MacroDTO total = new MacroDTO(
                     BigDecimal.ZERO,
@@ -182,6 +186,30 @@ public class ConsumoService {
             }
             return total;
         }
+    public MacroDTO somarConsumoPeriodo(LocalDateTime inicio, LocalDateTime fim){
+        MacroDTO total = new MacroDTO(
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO
+        );
+
+        for(Consumo consumo: buscarConsumoPorPeriodo(inicio,fim)){
+            ConsumoItemDTO item = converterConsumoEmDTO(consumo);
+
+            MacroDTO atual = new MacroDTO(item.getCalorias(),
+                    item.getProteinas(),
+                    item.getCarboidrato(),
+                    item.getGordura()
+            );
+
+            total = MacroDTO.somarDTO(total,atual);
+
+
+        }
+        return total;
+    }
+
 
 
 

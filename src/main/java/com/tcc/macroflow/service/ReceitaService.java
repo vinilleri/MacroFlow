@@ -220,14 +220,14 @@ public class ReceitaService {
     }
 
 
-    public void deletarItem( ReceitaItemRequestDTO dto,Long receitaId,Long id){
-        if(dto.getOrigem() == null){throw  new RuntimeException("Origem não pode ser nula");}
+    public void deletarItem( Origem origem,Long receitaId,Long id){
+        if(origem == null){throw  new RuntimeException("Origem não pode ser nula");}
 
 
-        if (Origem.SISTEMA.equals(dto.getOrigem())) {
+        if (Origem.SISTEMA.equals(origem)) {
             deletarItemSistema(id,receitaId);
         }
-        if (Origem.USUARIO.equals(dto.getOrigem())) {
+        if (Origem.USUARIO.equals(origem)) {
             deletarItemUsuario(id,receitaId);
         }
 
@@ -235,12 +235,12 @@ public class ReceitaService {
 
 
     @Transactional
-    public void deletarItemSistema(Long id,Long receitaId){
+    private void deletarItemSistema(Long id,Long receitaId){
         ReceitaItem item = buscarReceitaItem(id,receitaId);
          itemRepository.delete(item);
     }
     @Transactional
-    public void deletarItemUsuario(Long id,Long receitaId){
+    private void deletarItemUsuario(Long id,Long receitaId){
         ReceitaItemUsuario item = buscarReceitaItemUsuario(id,receitaId);
         receitaItemUsuarioRepository.delete(item);
     }

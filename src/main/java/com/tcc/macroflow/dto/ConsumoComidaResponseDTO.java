@@ -1,8 +1,5 @@
 package com.tcc.macroflow.dto;
 
-import com.tcc.macroflow.model.Comida;
-import com.tcc.macroflow.model.Consumo;
-import com.tcc.macroflow.model.Unidade;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
