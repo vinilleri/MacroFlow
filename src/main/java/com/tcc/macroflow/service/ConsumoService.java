@@ -8,6 +8,7 @@ import com.tcc.macroflow.repository.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +35,15 @@ public class ConsumoService {
         LocalDate hoje = LocalDate.now();
         return consumoRepository.findAllByUsuarioIdAndDataHoraBetween(usuario.getId(),
                 hoje.atStartOfDay(), hoje.atTime(23, 59, 59));
+    }
+
+    private List<Consumo> buscarConsumoPorPeriodo(LocalDateTime inicio,LocalDateTime fim){
+        Usuario usuario = authService.getUsuario();
+
+        if(inicio.isAfter(fim)){
+        throw new RuntimeException("Data invalida! O começo do período não pode vir depois do fim");
+        }
+        return consumoRepository.findAllByUsuarioIdAndDataHoraBetween(usuario.getId(), inicio,fim);
     }
 
     private ConsumoItemDTO converterConsumoEmDTO(Consumo consumo){
@@ -136,6 +146,44 @@ public class ConsumoService {
         }
         return dto;
     }
+
+        public List<ConsumoItemDTO> listarConsumoDia(){
+        return buscarConsumoDia().stream()
+                .map(this::converterConsumoEmDTO)
+                .toList();
+        }
+
+        public List<ConsumoItemDTO> listarConsumoPeriodo(LocalDateTime inicio, LocalDateTime fim){
+        return buscarConsumoPorPeriodo(inicio,fim).stream()
+                .map(this::converterConsumoEmDTO)
+                .toList();
+        }
+
+        public MacroDTO somarConsumoDia(){
+            MacroDTO total = new MacroDTO(
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO
+            );
+
+            for(Consumo consumo: buscarConsumoDia()){
+                ConsumoItemDTO item = converterConsumoEmDTO(consumo);
+
+                MacroDTO atual = new MacroDTO(item.getCalorias(),
+                        item.getProteinas(),
+                        item.getCarboidrato(),
+                        item.getGordura()
+                        );
+
+                total = MacroDTO.somarDTO(total,atual);
+
+
+            }
+            return total;
+        }
+
+
 
 
 

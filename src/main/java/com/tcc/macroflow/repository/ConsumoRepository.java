@@ -8,4 +8,5 @@ import java.util.List;
 public interface ConsumoRepository  extends JpaRepository<Consumo,Long> {
 
     List<Consumo> findAllByUsuarioIdAndDataHoraBetween(Long Id, LocalDateTime inicio, LocalDateTime fim);
+    List<Consumo> findAllByUsuarioId(Long Id);
 }
