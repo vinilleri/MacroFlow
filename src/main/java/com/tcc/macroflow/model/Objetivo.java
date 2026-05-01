@@ -30,6 +30,9 @@ public class Objetivo {
     @Column
     private LocalDate dataFim;
 
+    @Column(nullable = false)
+    private boolean ativo = true;
+
 
 
 }

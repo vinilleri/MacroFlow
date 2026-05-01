@@ -1,5 +1,6 @@
 package com.tcc.macroflow.model;
 
+import com.tcc.macroflow.component.TipoMeta;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,10 +31,14 @@ public class Meta {
     private BigDecimal carboidrato;
     @Column(nullable = false)
     private BigDecimal gordura;
+
     @Column(nullable = false)
     private LocalDate dataInicio;
     @Column(nullable = false)
     private LocalDate dataFim;
+
+    @Column(nullable = false)
+    private TipoMeta tipoMeta;
 
 
 }

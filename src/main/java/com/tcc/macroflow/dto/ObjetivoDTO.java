@@ -9,7 +9,6 @@ import java.time.LocalDate;
 @Data
 public class ObjetivoDTO {
 
-    private LocalDate dataInicio;
 
     private Long tipoObjetivoId;
 

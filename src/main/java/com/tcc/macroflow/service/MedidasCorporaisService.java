@@ -5,8 +5,10 @@ import com.tcc.macroflow.dto.MedidaCorporalResponseDTO;
 import com.tcc.macroflow.model.MedidasCorporais;
 import com.tcc.macroflow.model.Usuario;
 import com.tcc.macroflow.repository.MedidasCorporaisRepository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Service
 public class MedidasCorporaisService {
 
     private final MedidasCorporaisRepository repository;
