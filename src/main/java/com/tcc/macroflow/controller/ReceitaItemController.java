@@ -1,7 +1,7 @@
 package com.tcc.macroflow.controller;
 
 
-import com.tcc.macroflow.component.Origem;
+import com.tcc.macroflow.enums.Origem;
 import com.tcc.macroflow.dto.ReceitaItemDTO;
 import com.tcc.macroflow.dto.ReceitaItemRequestDTO;
 import com.tcc.macroflow.service.ReceitaService;

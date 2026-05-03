@@ -1,12 +1,11 @@
 package com.tcc.macroflow.controller;
 
-import com.tcc.macroflow.component.Origem;
+import com.tcc.macroflow.enums.Origem;
 import com.tcc.macroflow.dto.ConsumoComidaDTO;
 import com.tcc.macroflow.dto.ConsumoComidaResponseDTO;
 import com.tcc.macroflow.service.ConsumoComidaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

@@ -1,7 +1,7 @@
 package com.tcc.macroflow.service;
 
 
-import com.tcc.macroflow.component.Origem;
+import com.tcc.macroflow.enums.Origem;
 import com.tcc.macroflow.dto.ConsumoComidaDTO;
 import com.tcc.macroflow.dto.ConsumoComidaResponseDTO;
 import com.tcc.macroflow.model.*;

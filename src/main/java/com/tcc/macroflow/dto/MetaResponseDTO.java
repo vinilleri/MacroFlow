@@ -1,22 +1,23 @@
 package com.tcc.macroflow.dto;
 
-import com.tcc.macroflow.enums.Icone;
+import com.tcc.macroflow.enums.TipoMeta;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
-@Data
 @AllArgsConstructor
-@NoArgsConstructor
-public class ComidaResponseDTO {
-    private Long id;
-    private String nome;
+public class MetaResponseDTO {
     private BigDecimal calorias;
     private BigDecimal proteinas;
     private BigDecimal carboidrato;
     private BigDecimal gordura;
-    private Icone icone;
+
+    private LocalDate dataInicio;
+    private LocalDate dataFim;
+
+    private Long objetivoId;
+
+    private TipoMeta tipoMeta;
 
 }

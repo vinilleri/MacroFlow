@@ -1,6 +1,6 @@
 package com.tcc.macroflow.service;
 
-import com.tcc.macroflow.component.Origem;
+import com.tcc.macroflow.enums.Origem;
 import com.tcc.macroflow.dto.*;
 import com.tcc.macroflow.model.*;
 import com.tcc.macroflow.repository.*;

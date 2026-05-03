@@ -1,5 +1,6 @@
 package com.tcc.macroflow.model;
 
+import com.tcc.macroflow.enums.Sexo;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,12 +25,14 @@ public class MedidasCorporais {
     private BigDecimal peso;
 
     @Column(nullable = false)
+    private Sexo sexo;
+    @Column(nullable = false)
+    private LocalDate dataNascimento;
+    @Column(nullable = false)
     private Integer altura;
-
-    @Column(nullable = false)
+    @Column
     private BigDecimal percentualGordura;
-
-    @Column(nullable = false)
+    @Column
     private BigDecimal circuferenciaCintura;
 
     @Column(nullable = false)

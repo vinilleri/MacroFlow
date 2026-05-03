@@ -1,11 +1,10 @@
 package com.tcc.macroflow.service;
 
-import com.tcc.macroflow.component.TipoConsumo;
+import com.tcc.macroflow.enums.TipoConsumo;
 import com.tcc.macroflow.dto.ConsumoItemDTO;
 import com.tcc.macroflow.dto.MacroDTO;
 import com.tcc.macroflow.model.*;
 import com.tcc.macroflow.repository.*;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

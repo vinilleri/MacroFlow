@@ -1,5 +1,6 @@
 package com.tcc.macroflow.dto;
 
+import com.tcc.macroflow.enums.Sexo;
 import com.tcc.macroflow.model.Usuario;
 import jakarta.persistence.Column;
 import jakarta.persistence.JoinColumn;
@@ -17,6 +18,8 @@ public class MedidaCorporalDTO {
 
     private Integer altura;
 
+    private Sexo sexo;
+    private LocalDate dataNascimento;
     private BigDecimal percentualGordura;
 
     private BigDecimal circuferenciaCintura;

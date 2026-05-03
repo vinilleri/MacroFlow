@@ -8,6 +8,9 @@ import com.tcc.macroflow.repository.MedidasCorporaisRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 public class MedidasCorporaisService {
 
@@ -17,6 +20,17 @@ public class MedidasCorporaisService {
         this.repository = repository;
         this.authService = authService;
     }
+    private MedidaCorporalResponseDTO converterParaResponseDTO(MedidasCorporais medida) {
+        return new MedidaCorporalResponseDTO(
+                medida.getPeso(),
+                medida.getAltura(),
+                medida.getPercentualGordura(),
+                medida.getCircuferenciaCintura(),
+                medida.getDataNascimento(),
+                medida.getSexo(),
+                medida.getData()
+        );
+    }
 
     @Transactional
     public MedidaCorporalResponseDTO salvarMedida(MedidaCorporalDTO dto){
@@ -25,12 +39,19 @@ public class MedidasCorporaisService {
         salvo.setAltura(dto.getAltura());
         salvo.setData(dto.getData());
         salvo.setUsuario(usuario);
-        salvo.setPercentualGordura(dto.getPercentualGordura());
-        salvo.setCircuferenciaCintura(dto.getCircuferenciaCintura());
+        if(dto.getPercentualGordura() != null) {
+            salvo.setPercentualGordura(dto.getPercentualGordura());
+        }
+        if(dto.getCircuferenciaCintura() != null) {
+            salvo.setCircuferenciaCintura(dto.getCircuferenciaCintura());
+        }
+        salvo.setSexo(dto.getSexo());
+        salvo.setDataNascimento(dto.getDataNascimento());
         salvo.setAltura(dto.getAltura());
 
-        return new MedidaCorporalResponseDTO(salvo.getPeso(),salvo.getAltura(),salvo.getPercentualGordura(),salvo.getCircuferenciaCintura()
-        ,salvo.getData());
+        repository.save(salvo);
+        return converterParaResponseDTO(salvo);
+
     }
 
     @Transactional
@@ -45,14 +66,30 @@ public class MedidasCorporaisService {
             atualizado.setAltura(dto.getAltura());
             atualizado.setData(dto.getData());
             atualizado.setUsuario(usuario);
-            atualizado.setPercentualGordura(dto.getPercentualGordura());
-            atualizado.setCircuferenciaCintura(dto.getCircuferenciaCintura());
+            if(dto.getPercentualGordura() != null) {
+                atualizado.setPercentualGordura(dto.getPercentualGordura());
+            }
+            if(dto.getCircuferenciaCintura() != null) {
+                atualizado.setCircuferenciaCintura(dto.getCircuferenciaCintura());
+            }
+            atualizado.setSexo(dto.getSexo());
+            atualizado.setDataNascimento(dto.getDataNascimento());
             atualizado.setAltura(dto.getAltura());
+            repository.save(atualizado);
 
-            return new MedidaCorporalResponseDTO(atualizado.getPeso(), atualizado.getAltura(), atualizado.getPercentualGordura(), atualizado.getCircuferenciaCintura()
-                    , atualizado.getData());
+            return converterParaResponseDTO(atualizado);
         }
         throw  new RuntimeException("Medidas Corporais não pertence a esse usuário");
     }
+
+    private List<MedidasCorporais> buscarMedidaPorPeriodo(LocalDateTime inicio, LocalDateTime fim){
+        Usuario usuario = authService.getUsuario();
+
+        if(inicio.isAfter(fim)){
+            throw new RuntimeException("Data inválida! O começo do período não pode vir depois do fim");
+        }
+        return repository.findAllByUsuarioIdAndDataHoraBetween(usuario.getId(), inicio,fim);
+    }
+
 
 }

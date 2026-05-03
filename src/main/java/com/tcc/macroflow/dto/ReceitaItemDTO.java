@@ -1,7 +1,7 @@
 package com.tcc.macroflow.dto;
 
 
-import com.tcc.macroflow.component.Origem;
+import com.tcc.macroflow.enums.Origem;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

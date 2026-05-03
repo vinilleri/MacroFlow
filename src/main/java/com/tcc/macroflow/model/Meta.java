@@ -1,6 +1,6 @@
 package com.tcc.macroflow.model;
 
-import com.tcc.macroflow.component.TipoMeta;
+import com.tcc.macroflow.enums.TipoMeta;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,7 +20,7 @@ public class Meta {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "usuario.id", nullable = false)
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
     @Column(nullable = false)
@@ -36,6 +36,12 @@ public class Meta {
     private LocalDate dataInicio;
     @Column(nullable = false)
     private LocalDate dataFim;
+    @Column(nullable = false)
+    private boolean ativa;
+
+    @ManyToOne
+    @JoinColumn(name = "objetivo_id", nullable = false)
+    private Objetivo objetivo;
 
     @Column(nullable = false)
     private TipoMeta tipoMeta;

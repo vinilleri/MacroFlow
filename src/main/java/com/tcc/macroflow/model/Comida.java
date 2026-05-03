@@ -1,6 +1,6 @@
 package com.tcc.macroflow.model;
 
-import com.tcc.macroflow.component.Icone;
+import com.tcc.macroflow.enums.Icone;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

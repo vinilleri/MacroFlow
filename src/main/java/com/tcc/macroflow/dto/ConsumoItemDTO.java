@@ -1,6 +1,6 @@
 package com.tcc.macroflow.dto;
 
-import com.tcc.macroflow.component.TipoConsumo;
+import com.tcc.macroflow.enums.TipoConsumo;
 import lombok.Data;
 
 import java.math.BigDecimal;

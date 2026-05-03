@@ -1,4 +1,4 @@
-package com.tcc.macroflow.component;
+package com.tcc.macroflow.enums;
 
 public enum TipoConsumo {
     COMIDA,
