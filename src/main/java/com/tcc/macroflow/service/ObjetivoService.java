@@ -30,6 +30,10 @@ public class ObjetivoService {
         return tipoObjetivoRepository.findAll();
     }
 
+
+    private ObjetivoResponseDTO converterEmDto(Objetivo objetivo){
+       return new ObjetivoResponseDTO(objetivo.getDataInicio(), objetivo.getTipoObjetivo().getId());
+    }
     @Transactional
     public ObjetivoResponseDTO salvar(ObjetivoDTO dto){
 
@@ -93,10 +97,16 @@ public class ObjetivoService {
         throw  new RuntimeException("Objetivo não pertence a esse usuário");
     }
 
-    public List<Objetivo> listaObjetivosAntigos() {
+    public List<ObjetivoResponseDTO> listaObjetivosAntigos() {
         Usuario usuario = authService.getUsuario();
-        return repository.findAllByUsuarioIdAndAtivo(usuario.getId(), false);
+        List<Objetivo> lista = repository.findAllByUsuarioIdAndAtivo(usuario.getId(), false);
+
+      return   lista.stream()
+                .map(this:: converterEmDto)
+                .toList();
+
     }
+
     @Transactional
     public void deletarObjetivoAntigo(Long objetivoId){
         Usuario usuario = authService.getUsuario();
@@ -125,11 +135,13 @@ public class ObjetivoService {
         else throw  new RuntimeException("Objetivo não pertence a usuário");
     }
 
-    public Objetivo objetivoAtual(){
+    public ObjetivoResponseDTO objetivoAtual(){
         Usuario usuario = authService.getUsuario();
-        return repository.findByUsuarioIdAndAtivo(usuario.getId(), true).orElseThrow(
+        Objetivo objetivo = repository.findByUsuarioIdAndAtivo(usuario.getId(), true).orElseThrow(
                 () -> new RuntimeException("Erro em achar objetivo atual")
         );
+
+        return converterEmDto(objetivo);
     }
 
     }

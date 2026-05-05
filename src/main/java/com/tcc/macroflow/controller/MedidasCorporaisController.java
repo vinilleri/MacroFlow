@@ -7,8 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/medidasCorporais")
+@RequestMapping("/api/medidas-corporais")
 @CrossOrigin("*")
 public class MedidasCorporaisController{
 
@@ -19,7 +22,7 @@ public class MedidasCorporaisController{
     }
 
     @PostMapping
-    public ResponseEntity<?> salvarMedidasCorporais(MedidaCorporalDTO dto){
+    public ResponseEntity<?> salvarMedidasCorporais(@RequestBody MedidaCorporalDTO dto){
 
         MedidaCorporalResponseDTO responseDTO = service.salvarMedida(dto);
 
@@ -27,7 +30,7 @@ public class MedidasCorporaisController{
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<?> salvarMedidasCorporais(Long id,MedidaCorporalDTO dto){
+    public ResponseEntity<?> atualizarMedidasCorporais(@PathVariable  Long id, @RequestBody MedidaCorporalDTO dto){
         try {
             MedidaCorporalResponseDTO responseDTO = service.atualizarMedida(dto,id);
 
@@ -36,6 +39,19 @@ public class MedidasCorporaisController{
         catch(Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> buscarMedidasCorporaisAtuais(){
+        MedidaCorporalResponseDTO atual =service.buscarMedidaAtual();
+
+        return ResponseEntity.ok(atual);
+    }
+
+    @GetMapping("/periodo")
+    public ResponseEntity<?> buscarMedidasCorporaisPeriodo(@RequestParam LocalDate inicio, @RequestParam LocalDate fim){
+        List<MedidaCorporalResponseDTO> lista = service.buscarMedidaPorPeriodo(inicio,fim);
+        return ResponseEntity.ok(lista);
     }
 
 }

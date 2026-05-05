@@ -8,7 +8,7 @@ import com.tcc.macroflow.repository.MedidasCorporaisRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -82,14 +82,33 @@ public class MedidasCorporaisService {
         throw  new RuntimeException("Medidas Corporais não pertence a esse usuário");
     }
 
-    private List<MedidasCorporais> buscarMedidaPorPeriodo(LocalDateTime inicio, LocalDateTime fim){
+    public List<MedidaCorporalResponseDTO> buscarMedidaPorPeriodo(LocalDate inicio, LocalDate fim){
         Usuario usuario = authService.getUsuario();
 
         if(inicio.isAfter(fim)){
             throw new RuntimeException("Data inválida! O começo do período não pode vir depois do fim");
         }
-        return repository.findAllByUsuarioIdAndDataHoraBetween(usuario.getId(), inicio,fim);
+       List <MedidasCorporais> medidasCorporaisList = repository.findAllByUsuarioIdAndDataBetween(usuario.getId()
+               , inicio,fim);
+
+      return  medidasCorporaisList.stream()
+                .map(this::converterParaResponseDTO)
+                .toList();
     }
+
+
+
+
+    public MedidaCorporalResponseDTO buscarMedidaAtual(){
+        Usuario usuario = authService.getUsuario();
+      MedidasCorporais atual =  repository.findTopByUsuarioIdOrderByDataDesc(usuario.getId()).orElseThrow(
+              () -> new RuntimeException("Medidas Corporais não  foram encontradas")
+      );
+
+      return converterParaResponseDTO(atual);
+    }
+
+
 
 
 }

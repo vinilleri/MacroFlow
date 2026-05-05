@@ -5,13 +5,14 @@ import com.tcc.macroflow.dto.ConsumoItemDTO;
 import com.tcc.macroflow.dto.MacroDTO;
 import com.tcc.macroflow.model.*;
 import com.tcc.macroflow.repository.*;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
+@Service
 public class ConsumoService {
     private final ConsumoReceitaRepository consumoReceitaRepository;
     private final ConsumoRepository consumoRepository;
