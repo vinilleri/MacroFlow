@@ -12,5 +12,6 @@ public class ConsumoComidaDTO {
 
     private Long comidaId;
     private BigDecimal quantidade;
+    private BigDecimal valor;
     private Origem origem;
 }

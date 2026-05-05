@@ -63,6 +63,7 @@ private final UnidadeRepository unidadeRepository;
                 comidaUsuario.getProteinas(),
                 comidaUsuario.getCarboidrato(),
                 comidaUsuario.getGordura(),
+                comidaUsuario.getValor(),
                 comidaUsuario.getIcone());
     }
 
@@ -110,6 +111,7 @@ private final UnidadeRepository unidadeRepository;
                 atualizado.getProteinas(),
                 atualizado.getCarboidrato(),
                 atualizado.getGordura(),
+                atualizado.getValor(),
                 atualizado.getIcone());
 
     }

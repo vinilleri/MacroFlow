@@ -10,6 +10,7 @@ public class ReceitaItemRequestDTO {
     private  Long comidaId;
     private Long unidadeId;
     private BigDecimal quantidade;
+    private BigDecimal valor;
     private Origem origem;
 }
 

@@ -74,7 +74,7 @@ public class EmailService
         </div>
     """;
 
-        helper.setText(html, true); // true = HTML
+        helper.setText(html, true);
 
         mailSender.send(mensagem);
     }

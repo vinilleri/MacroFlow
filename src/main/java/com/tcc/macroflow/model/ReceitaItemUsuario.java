@@ -25,7 +25,8 @@ public class ReceitaItemUsuario {
         @JoinColumn(name = "receita_id", nullable = false)
         private Receita receita;
 
-
+        @Column(nullable = false)
+        private BigDecimal valor;
 
         @Column(nullable = false)
         private BigDecimal quantidade;

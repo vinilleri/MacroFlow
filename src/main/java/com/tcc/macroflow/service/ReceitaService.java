@@ -89,16 +89,18 @@ public class ReceitaService {
            Receita receita = buscarReceitaUsuario(receitaId);
 
            if (Origem.SISTEMA.equals(dto.getOrigem())) {
-               ReceitaItem receitaItem = adicionarItemSistema(dto.getComidaId(), receita, dto.getQuantidade());
+               ReceitaItem receitaItem = adicionarItemSistema(dto.getComidaId(), receita, dto.getQuantidade(), dto.getValor());
                return new ReceitaItemDTO(receitaItem.getComida().getCalorias(),
                        receitaItem.getComida().getNome(),
                        receitaItem.getQuantidade(),
+                       receitaItem.getValor(),
                        Origem.SISTEMA);
            } else {
                ReceitaItemUsuario receitaItem = adicionarItemUsuario(dto.getComidaId(), receita, dto.getQuantidade());
                return new ReceitaItemDTO(receitaItem.getComida().getCalorias(),
                        receitaItem.getComida().getNome(),
                        receitaItem.getQuantidade(),
+                       receitaItem.getValor(),
                        Origem.USUARIO);
            }
 
@@ -106,7 +108,7 @@ public class ReceitaService {
     }
 
     @Transactional
-    public ReceitaItem adicionarItemSistema(Long comidaId,Receita receita, BigDecimal quantidade){
+    private ReceitaItem adicionarItemSistema(Long comidaId,Receita receita, BigDecimal quantidade, BigDecimal valor){
         if(quantidade.compareTo(BigDecimal.ZERO) <= 0){
             throw new RuntimeException("quantidade invalida");
         }
@@ -128,6 +130,7 @@ public class ReceitaService {
 
         item.setReceita(receita);
         item.setQuantidade(quantidade);
+        item.setValor(valor);
         item.setComida(comida);
 
 
@@ -138,7 +141,7 @@ public class ReceitaService {
 
 
     @Transactional
-    public ReceitaItemUsuario adicionarItemUsuario(Long comidaUsuarioId,Receita receita, BigDecimal quantidade ){
+    private ReceitaItemUsuario adicionarItemUsuario(Long comidaUsuarioId,Receita receita, BigDecimal quantidade ){
         if(quantidade.compareTo(BigDecimal.ZERO) <= 0){
             throw new RuntimeException("quantidade invalida");
         }
@@ -175,24 +178,27 @@ public class ReceitaService {
         if(dto.getOrigem() == null){throw  new RuntimeException("Origem não pode ser nula");}
 
         if (Origem.SISTEMA.equals(dto.getOrigem())) {
-            ReceitaItem receitaItem =   atualizarItemSistema(id,dto.getQuantidade(),receitaId);
+            ReceitaItem receitaItem =   atualizarItemSistema(id,dto.getQuantidade(),receitaId,dto.getValor());
             return new ReceitaItemDTO(receitaItem.getComida().getCalorias(),
                     receitaItem.getComida().getNome(),
                     receitaItem.getQuantidade(),
+                    receitaItem.getValor(),
                     Origem.SISTEMA);
         }
         else{
-           ReceitaItemUsuario receitaItem= atualizarItemUsuario(id,dto.getQuantidade(),receitaId);
+           ReceitaItemUsuario receitaItem= atualizarItemUsuario(id,dto.getQuantidade(),receitaId,dto.getValor());
             return new ReceitaItemDTO(receitaItem.getComida().getCalorias(),
                     receitaItem.getComida().getNome(),
                     receitaItem.getQuantidade(),
+                    receitaItem.getValor(),
                     Origem.USUARIO);
         }
 
     }
 
     @Transactional
-    public ReceitaItem atualizarItemSistema(Long id, BigDecimal quantidadeNova, Long receitaId){
+    private ReceitaItem atualizarItemSistema(Long id, BigDecimal quantidadeNova,
+                                             Long receitaId,BigDecimal valorNovo){
 
         ReceitaItem item = buscarReceitaItem(id,receitaId);
 
@@ -201,12 +207,13 @@ public class ReceitaService {
             return null;
         }
         item.setQuantidade(quantidadeNova);
-
+        item.setValor(valorNovo);
         return itemRepository.save(item);
 
     }
     @Transactional
-    public ReceitaItemUsuario atualizarItemUsuario(Long id, BigDecimal quantidadeNova, Long receitaId){
+    private ReceitaItemUsuario atualizarItemUsuario(Long id, BigDecimal quantidadeNova,
+                                                    Long receitaId,BigDecimal valorNovo){
 
         ReceitaItemUsuario item = buscarReceitaItemUsuario(id,receitaId);
         if(quantidadeNova.compareTo(BigDecimal.ZERO) <= 0){
@@ -214,7 +221,7 @@ public class ReceitaService {
             return null;
         }
         item.setQuantidade(quantidadeNova);
-
+        item.setValor(valorNovo);
         return receitaItemUsuarioRepository.save(item);
 
     }
@@ -252,6 +259,7 @@ public class ReceitaService {
                         receitaItem.getComida().getCalorias(),
                         receitaItem.getComida().getNome(),
                         receitaItem.getQuantidade(),
+                        receitaItem.getValor(),
                         Origem.SISTEMA
                 ))
                 .toList();
@@ -263,6 +271,7 @@ public class ReceitaService {
                         receitaItemUsuario.getComida().getCalorias(),
                         receitaItemUsuario.getComida().getNome(),
                         receitaItemUsuario.getQuantidade(),
+                        receitaItemUsuario.getValor(),
                         Origem.USUARIO
                 ))
                 .toList();

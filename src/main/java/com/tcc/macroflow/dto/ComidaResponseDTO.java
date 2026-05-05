@@ -18,5 +18,7 @@ public class ComidaResponseDTO {
     private BigDecimal carboidrato;
     private BigDecimal gordura;
     private Icone icone;
+    private Long unidadeId;
+    private BigDecimal valor;
 
 }

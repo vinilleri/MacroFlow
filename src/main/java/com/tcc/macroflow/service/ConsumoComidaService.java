@@ -4,13 +4,13 @@ package com.tcc.macroflow.service;
 import com.tcc.macroflow.enums.Origem;
 import com.tcc.macroflow.dto.ConsumoComidaDTO;
 import com.tcc.macroflow.dto.ConsumoComidaResponseDTO;
+import com.tcc.macroflow.helper.CalcularQuantidade;
 import com.tcc.macroflow.model.*;
 import com.tcc.macroflow.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 @Service
@@ -31,15 +31,6 @@ public class ConsumoComidaService {
         this.comidaUsuarioRepository = comidaUsuarioRepository;
     }
 
-    private BigDecimal calcularQuantidade(Comida comida, ConsumoComidaDTO dto){
-        BigDecimal base = comida.getValor().divide(comida.getUnidade().getBase(), 2, RoundingMode.HALF_UP);
-        return dto.getQuantidade().multiply(base);
-    }
-
-    private BigDecimal calcularQuantidadeUsuario(ComidaUsuario comida, ConsumoComidaDTO dto){
-        BigDecimal base = comida.getValor().divide(comida.getUnidade().getBase(), 2, RoundingMode.HALF_UP);
-        return dto.getQuantidade().multiply(base);
-    }
 
     private ConsumoComida consumirComidaSistema(ConsumoComidaDTO dto, Consumo consumo){
         ConsumoComida consumoComida = new ConsumoComida();
@@ -50,7 +41,8 @@ public class ConsumoComidaService {
         consumoComida.setComida(comida);
         consumoComida.setConsumo(consumo);
 
-        BigDecimal quantidadeFinal = calcularQuantidade(comida,dto);
+        BigDecimal quantidadeFinal =CalcularQuantidade.calcularQuantidade(dto.getQuantidade(),dto.getValor()
+                ,CalcularQuantidade.converterComidaEmDto(comida));
         consumoComida.setQuantidade(quantidadeFinal);
 
         return consumoComida;
@@ -63,7 +55,8 @@ public class ConsumoComidaService {
         consumoComidaUsuario.setComidaUsuario(comida);
         consumoComidaUsuario.setConsumo(consumo);
 
-        BigDecimal quantidadeFinal = calcularQuantidadeUsuario(comida,dto);
+        BigDecimal quantidadeFinal = CalcularQuantidade.calcularQuantidade(dto.getQuantidade(),dto.getValor()
+                ,CalcularQuantidade.converterComidaUsuarioEmDto(comida));
         consumoComidaUsuario.setQuantidade(quantidadeFinal);
 
         return consumoComidaUsuario;
@@ -102,7 +95,8 @@ public class ConsumoComidaService {
                     () -> new RuntimeException("Comida não encontrada")
             );
             atualizado.setComida(comida);
-            BigDecimal quantidadeFinal = calcularQuantidade(comida,dto);
+            BigDecimal quantidadeFinal =  CalcularQuantidade.calcularQuantidade(dto.getQuantidade(),dto.getValor()
+                    ,CalcularQuantidade.converterComidaEmDto(comida));
             atualizado.setQuantidade(quantidadeFinal);
 
             return atualizado;
@@ -117,7 +111,8 @@ public class ConsumoComidaService {
                     () -> new RuntimeException("Comida não encontrada")
             );
             atualizado.setComidaUsuario(comida);
-            BigDecimal quantidadeFinal = calcularQuantidadeUsuario(comida,dto);
+            BigDecimal quantidadeFinal = CalcularQuantidade.calcularQuantidade(dto.getQuantidade(),dto.getValor()
+                    ,CalcularQuantidade.converterComidaUsuarioEmDto(comida));
             atualizado.setQuantidade(quantidadeFinal);
 
             return atualizado;

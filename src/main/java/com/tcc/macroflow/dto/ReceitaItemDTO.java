@@ -16,10 +16,9 @@ public class ReceitaItemDTO {
 
     private String nome;
 
-
-
     private BigDecimal quantidade;
 
+    private BigDecimal valor;
     private Origem origem;
 
 }
