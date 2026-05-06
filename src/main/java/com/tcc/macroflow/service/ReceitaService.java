@@ -123,6 +123,7 @@ public class ReceitaService {
             ReceitaItem atualizado = buscaItem.get();
             BigDecimal quantidadeNova = atualizado.getQuantidade().add(quantidade);
             atualizado.setQuantidade(quantidadeNova);
+            atualizado.setValor(valor);
             return itemRepository.save(atualizado);
         }
 

@@ -103,8 +103,7 @@ public class ConsumoService {
        throw new RuntimeException("Consumo está sem tipo");
     }
 
-    private MacroDTO somarMacrosSistema(ReceitaItem i,BigDecimal quantidade, BigDecimal
-                                        valor){
+    private MacroDTO somarMacrosSistema(ReceitaItem i,BigDecimal quantidade){
         Comida comida = i.getComida();
         BigDecimal totalCaloria = BigDecimal.ZERO;
         BigDecimal totalProteina = BigDecimal.ZERO;
@@ -112,7 +111,7 @@ public class ConsumoService {
         BigDecimal totalGordura = BigDecimal.ZERO;
 
         BigDecimal quantidadeTotal = quantidade.multiply(i.getQuantidade());
-        BigDecimal quantidadeFinal = CalcularQuantidade.calcularQuantidade(quantidadeTotal, valor
+        BigDecimal quantidadeFinal = CalcularQuantidade.calcularQuantidade(quantidadeTotal, i.getValor()
                 ,CalcularQuantidade.converterComidaEmDto(comida));
         totalCaloria = totalCaloria.add(comida.getCalorias().multiply(quantidadeFinal));
         totalGordura = totalGordura.add(comida.getGordura().multiply(quantidadeFinal));
@@ -123,8 +122,7 @@ public class ConsumoService {
     }
 
     private MacroDTO somarMacrosUsuario(ReceitaItemUsuario i,
-                                        BigDecimal quantidade,
-                                        BigDecimal valor){
+                                        BigDecimal quantidade){
         ComidaUsuario comida = i.getComida();
         BigDecimal totalCaloria = BigDecimal.ZERO;
         BigDecimal totalProteina = BigDecimal.ZERO;
@@ -132,7 +130,7 @@ public class ConsumoService {
         BigDecimal totalGordura = BigDecimal.ZERO;
 
         BigDecimal quantidadeTotal = quantidade.multiply(i.getQuantidade());
-        BigDecimal quantidadeFinal = CalcularQuantidade.calcularQuantidade(quantidadeTotal, valor
+        BigDecimal quantidadeFinal = CalcularQuantidade.calcularQuantidade(quantidadeTotal, i.getValor()
                 ,CalcularQuantidade.converterComidaUsuarioEmDto(comida));
         totalCaloria = totalCaloria.add(comida.getCalorias().multiply(quantidadeFinal));
         totalGordura = totalGordura.add(comida.getGordura().multiply(quantidadeFinal));
@@ -155,7 +153,7 @@ public class ConsumoService {
         if(!itemUsuario.isEmpty()){
             for(ReceitaItemUsuario i: itemUsuario){
 
-             dto = MacroDTO.somarDTO(dto,somarMacrosUsuario(i,quantidade,i.getComida().getValor()));
+             dto = MacroDTO.somarDTO(dto,somarMacrosUsuario(i,quantidade));
             }
 
         }
