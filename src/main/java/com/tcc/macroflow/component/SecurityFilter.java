@@ -26,12 +26,6 @@ public class SecurityFilter extends OncePerRequestFilter {
     private UsuarioRepository usuarioRepository;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String path = request.getRequestURI();
-        if (path.startsWith("/api/login")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         String token = recuperarToken(request);
 
         if (token != null) {
@@ -42,7 +36,7 @@ public class SecurityFilter extends OncePerRequestFilter {
                     Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
 
                     if (usuario != null) {
-                        var auth = new UsernamePasswordAuthenticationToken(
+                        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                                 usuario, null, usuario.getAuthorities()
                         );
 
@@ -51,7 +45,7 @@ public class SecurityFilter extends OncePerRequestFilter {
                 }
 
             } catch (Exception e) {
-
+               throw new RuntimeException("Token inválido "+e.getMessage());
             }
         }
 

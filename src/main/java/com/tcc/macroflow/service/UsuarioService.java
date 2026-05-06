@@ -2,6 +2,7 @@ package com.tcc.macroflow.service;
 
 
 import com.tcc.macroflow.dto.UsuarioDTO;
+import com.tcc.macroflow.helper.ValidarSenha;
 import com.tcc.macroflow.model.AtividadeFisica;
 import com.tcc.macroflow.model.Usuario;
 import com.tcc.macroflow.repository.AtividadeFisicaRepository;
@@ -39,6 +40,7 @@ public class UsuarioService {
             throw  new RuntimeException("Email já existe");
         }
         usuario.setEmail(dto.getEmail());
+        ValidarSenha.validarSenha(dto.getSenha());
         usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
 
 

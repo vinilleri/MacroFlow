@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -96,7 +97,7 @@ public class ReceitaService {
                        receitaItem.getValor(),
                        Origem.SISTEMA);
            } else {
-               ReceitaItemUsuario receitaItem = adicionarItemUsuario(dto.getComidaId(), receita, dto.getQuantidade());
+               ReceitaItemUsuario receitaItem = adicionarItemUsuario(dto.getComidaId(), receita, dto.getQuantidade(),dto.getValor());
                return new ReceitaItemDTO(receitaItem.getComida().getCalorias(),
                        receitaItem.getComida().getNome(),
                        receitaItem.getQuantidade(),
@@ -121,9 +122,13 @@ public class ReceitaService {
 
         if(buscaItem.isPresent()){
             ReceitaItem atualizado = buscaItem.get();
+            BigDecimal total = atualizado.getQuantidade().multiply(atualizado.getValor())
+                    .add(quantidade.multiply(valor));
+
             BigDecimal quantidadeNova = atualizado.getQuantidade().add(quantidade);
+            BigDecimal valorNovo = total.divide(quantidadeNova,2, RoundingMode.HALF_UP);
             atualizado.setQuantidade(quantidadeNova);
-            atualizado.setValor(valor);
+            atualizado.setValor(valorNovo);
             return itemRepository.save(atualizado);
         }
 
@@ -142,7 +147,7 @@ public class ReceitaService {
 
 
     @Transactional
-    private ReceitaItemUsuario adicionarItemUsuario(Long comidaUsuarioId,Receita receita, BigDecimal quantidade ){
+    private ReceitaItemUsuario adicionarItemUsuario(Long comidaUsuarioId,Receita receita, BigDecimal quantidade,BigDecimal valor){
         if(quantidade.compareTo(BigDecimal.ZERO) <= 0){
             throw new RuntimeException("quantidade invalida");
         }
@@ -160,8 +165,14 @@ public class ReceitaService {
 
         if(buscaItem.isPresent()){
             ReceitaItemUsuario atualizado = buscaItem.get();
+
+            BigDecimal total = atualizado.getQuantidade().multiply(atualizado.getValor())
+                    .add(quantidade.multiply(valor));
+
             BigDecimal quantidadeNova = atualizado.getQuantidade().add(quantidade);
+            BigDecimal valorNovo = total.divide(quantidadeNova,2, RoundingMode.HALF_UP);
             atualizado.setQuantidade(quantidadeNova);
+            atualizado.setValor(valorNovo);
             return receitaItemUsuarioRepository.save(atualizado);
         }
 
@@ -169,6 +180,7 @@ public class ReceitaService {
 
         item.setReceita(receita);
         item.setQuantidade(quantidade);
+        item.setValor(valor);
         item.setComida(comida);
 
 

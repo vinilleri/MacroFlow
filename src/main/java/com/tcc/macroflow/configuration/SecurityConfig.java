@@ -27,6 +27,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
         return   http
                     .csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests(auth -> auth
+                            .requestMatchers("/api/**").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/usuario").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/usuario/login").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/usuario/login/confirmar/**").permitAll()

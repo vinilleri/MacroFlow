@@ -5,9 +5,8 @@ import com.tcc.macroflow.dto.ComidaDTO;
 
 import com.tcc.macroflow.dto.ComidaResponseDTO;
 import com.tcc.macroflow.model.Comida;
-import com.tcc.macroflow.model.ComidaUsuario;
 
-import com.tcc.macroflow.model.Usuario;
+
 import com.tcc.macroflow.service.ComidaService;
 import com.tcc.macroflow.service.UsuarioService;
 import org.springframework.http.HttpStatus;

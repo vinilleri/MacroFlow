@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ComidaDTO {
-private Long id;
 private String nome;
 private BigDecimal calorias;
 private BigDecimal proteinas;

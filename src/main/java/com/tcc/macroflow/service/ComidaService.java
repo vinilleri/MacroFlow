@@ -63,8 +63,9 @@ private final UnidadeRepository unidadeRepository;
                 comidaUsuario.getProteinas(),
                 comidaUsuario.getCarboidrato(),
                 comidaUsuario.getGordura(),
-                comidaUsuario.getValor(),
-                comidaUsuario.getIcone());
+                comidaUsuario.getIcone(),
+                comidaUsuario.getUnidade().getId(),
+                comidaUsuario.getValor());
     }
 
     @Transactional
@@ -111,8 +112,9 @@ private final UnidadeRepository unidadeRepository;
                 atualizado.getProteinas(),
                 atualizado.getCarboidrato(),
                 atualizado.getGordura(),
-                atualizado.getValor(),
-                atualizado.getIcone());
+                atualizado.getIcone(),
+                atualizado.getUnidade().getId(),
+                atualizado.getValor());
 
     }
 
@@ -133,8 +135,9 @@ private final UnidadeRepository unidadeRepository;
                         comidaUsuario.getProteinas(),
                         comidaUsuario.getCarboidrato(),
                         comidaUsuario.getGordura(),
-                        comidaUsuario.getIcone()
-                        ))
+                        comidaUsuario.getIcone(),
+                        comidaUsuario.getUnidade().getId(),
+                        comidaUsuario.getValor()))
                 .toList();
     }
 
