@@ -79,9 +79,9 @@ private final TokenService tokenService;
         return ResponseEntity.status(401).body("Credenciais inválidas");
     }
 
-    @PostMapping("/login/confirmar/{id}")
-    public ResponseEntity<?> validarLogin(@PathVariable Long id, @RequestBody EmailDTO emailDTO) throws Exception {
-        Usuario usuario = usuarioService.buscarPorId(id);
+    @PostMapping("/login/confirmar")
+    public ResponseEntity<?> validarLogin( @RequestBody EmailDTO emailDTO) throws Exception {
+        Usuario usuario = usuarioService.buscarPorEmail(emailDTO.getEmail());
 
         emailService.validarCodigo(usuario, emailDTO.getCodigo());
 
