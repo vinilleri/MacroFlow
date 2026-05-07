@@ -37,6 +37,5 @@ public class ValidacaoMacro {
             throw  new RuntimeException("Configuração de dieta inválida");
         }
 
-
     }
 }

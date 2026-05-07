@@ -105,11 +105,8 @@ public class MetaService {
         if(funcao == FuncaoMeta.CRIAR){
             meta.setDataInicio(LocalDate.now());
         }
-        if(dto.getDataFim() != null){
-            if(dto.getDataFim().isBefore(LocalDate.now())){
-                throw new RuntimeException("Data final não pode ser antes do inicio");
-            }
-            meta.setDataFim(dto.getDataFim());
+        if(objetivo.getDataFim() != null){
+            meta.setDataFim(objetivo.getDataFim());
         }
         meta.setTipoMeta(dto.getTipoMeta());
 

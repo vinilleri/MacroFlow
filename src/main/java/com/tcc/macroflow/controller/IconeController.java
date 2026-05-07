@@ -1,7 +1,9 @@
 package com.tcc.macroflow.controller;
 
+import com.tcc.macroflow.enums.Icone;
 import com.tcc.macroflow.model.AtividadeFisica;
 import com.tcc.macroflow.service.AtividadeFisicaService;
+import com.tcc.macroflow.service.IconeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,19 +13,19 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/atividade-fisica")
+@RequestMapping("/api/icone")
 @CrossOrigin("*")
-public class AtividadeFisicaController {
+public class IconeController {
 
-    private final AtividadeFisicaService service;
+    private final IconeService service;
 
-    public AtividadeFisicaController(AtividadeFisicaService service) {
+    public IconeController(IconeService service) {
         this.service = service;
     }
 
     @GetMapping
-    public ResponseEntity<List<AtividadeFisica>> listarAtividadeFisica(){
-        List<AtividadeFisica> lista = service.listaAtividadeFisica();
+    public ResponseEntity<List<Icone>> listarIcones(){
+        List<Icone> lista = service.listaIcones();
         return ResponseEntity.ok(lista);
     }
 }

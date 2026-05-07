@@ -55,6 +55,7 @@ public class ConsumoService {
         ConsumoItemDTO consumoItemDTO = new ConsumoItemDTO();
         consumoItemDTO.setDataHora(consumo.getDataHora());
         consumoItemDTO.setConsumoId(consumo.getId());
+
         if(possivelConsumoReceita.isPresent()){
             ConsumoReceita consumoReceita = possivelConsumoReceita.get();
             Receita receita = consumoReceita.getReceita();
@@ -82,6 +83,7 @@ public class ConsumoService {
             consumoItemDTO.setProteinas(comida.getProteinas().multiply(consumoComida.getQuantidade()));
             consumoItemDTO.setCalorias(comida.getCalorias().multiply(consumoComida.getQuantidade()));
             consumoItemDTO.setQuantidade(consumoComida.getQuantidade());
+            consumoItemDTO.setUnidadeId(comida.getUnidade().getId());
 
             return consumoItemDTO;
         }

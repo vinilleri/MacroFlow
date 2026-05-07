@@ -8,7 +8,8 @@ import java.time.LocalDate;
 public class ObjetivoResponseDTO {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dataInicio;
-
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private LocalDate dataFinal;
     private Long tipoObjetivoId;
 
 }

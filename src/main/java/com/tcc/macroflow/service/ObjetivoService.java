@@ -32,7 +32,7 @@ public class ObjetivoService {
 
 
     private ObjetivoResponseDTO converterEmDto(Objetivo objetivo){
-       return new ObjetivoResponseDTO(objetivo.getDataInicio(), objetivo.getTipoObjetivo().getId());
+       return new ObjetivoResponseDTO(objetivo.getDataInicio(),objetivo.getDataFim(),objetivo.getTipoObjetivo().getId());
     }
     @Transactional
     public ObjetivoResponseDTO salvar(ObjetivoDTO dto){
@@ -70,7 +70,7 @@ public class ObjetivoService {
 
         repository.save(objetivo);
 
-        return new ObjetivoResponseDTO(objetivo.getDataInicio(),objetivo.getTipoObjetivo().getId());
+        return converterEmDto(objetivo);
     }
 
     @Transactional
@@ -92,7 +92,7 @@ public class ObjetivoService {
                 atualizado.setDataFim(dto.getDataFim());
             }
             repository.save(atualizado);
-            return new ObjetivoResponseDTO(atualizado.getDataInicio(), atualizado.getTipoObjetivo().getId());
+            return converterEmDto(atualizado);
         }
         throw  new RuntimeException("Objetivo não pertence a esse usuário");
     }

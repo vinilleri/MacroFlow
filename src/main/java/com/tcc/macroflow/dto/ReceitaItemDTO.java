@@ -13,12 +13,20 @@ public class ReceitaItemDTO {
 
 
     private BigDecimal calorias;
+    private BigDecimal proteinas;
+    private BigDecimal carboidrato;
+    private BigDecimal gordura;
+
+
 
     private String nome;
 
     private BigDecimal quantidade;
 
     private BigDecimal valor;
+
+
+
     private Origem origem;
 
 }

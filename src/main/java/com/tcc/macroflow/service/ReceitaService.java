@@ -2,11 +2,13 @@ package com.tcc.macroflow.service;
 
 import com.tcc.macroflow.enums.Origem;
 import com.tcc.macroflow.dto.*;
+import com.tcc.macroflow.helper.CalcularQuantidade;
 import com.tcc.macroflow.model.*;
 import com.tcc.macroflow.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.crypto.Mac;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -91,14 +93,22 @@ public class ReceitaService {
 
            if (Origem.SISTEMA.equals(dto.getOrigem())) {
                ReceitaItem receitaItem = adicionarItemSistema(dto.getComidaId(), receita, dto.getQuantidade(), dto.getValor());
-               return new ReceitaItemDTO(receitaItem.getComida().getCalorias(),
+               return new ReceitaItemDTO(
+                       receitaItem.getComida().getCalorias(),
+                       receitaItem.getComida().getProteinas(),
+                       receitaItem.getComida().getCarboidrato(),
+                       receitaItem.getComida().getGordura(),
                        receitaItem.getComida().getNome(),
                        receitaItem.getQuantidade(),
                        receitaItem.getValor(),
                        Origem.SISTEMA);
            } else {
                ReceitaItemUsuario receitaItem = adicionarItemUsuario(dto.getComidaId(), receita, dto.getQuantidade(),dto.getValor());
-               return new ReceitaItemDTO(receitaItem.getComida().getCalorias(),
+               return new ReceitaItemDTO(
+                       receitaItem.getComida().getCalorias(),
+                       receitaItem.getComida().getProteinas(),
+                       receitaItem.getComida().getCarboidrato(),
+                       receitaItem.getComida().getGordura(),
                        receitaItem.getComida().getNome(),
                        receitaItem.getQuantidade(),
                        receitaItem.getValor(),
@@ -129,6 +139,7 @@ public class ReceitaService {
             BigDecimal valorNovo = total.divide(quantidadeNova,2, RoundingMode.HALF_UP);
             atualizado.setQuantidade(quantidadeNova);
             atualizado.setValor(valorNovo);
+
             return itemRepository.save(atualizado);
         }
 
@@ -173,6 +184,7 @@ public class ReceitaService {
             BigDecimal valorNovo = total.divide(quantidadeNova,2, RoundingMode.HALF_UP);
             atualizado.setQuantidade(quantidadeNova);
             atualizado.setValor(valorNovo);
+
             return receitaItemUsuarioRepository.save(atualizado);
         }
 
@@ -191,8 +203,12 @@ public class ReceitaService {
         if(dto.getOrigem() == null){throw  new RuntimeException("Origem não pode ser nula");}
 
         if (Origem.SISTEMA.equals(dto.getOrigem())) {
-            ReceitaItem receitaItem =   atualizarItemSistema(id,dto.getQuantidade(),receitaId,dto.getValor());
-            return new ReceitaItemDTO(receitaItem.getComida().getCalorias(),
+            ReceitaItem receitaItem = atualizarItemSistema(id, dto.getQuantidade(), receitaId, dto.getValor());
+            return new ReceitaItemDTO(
+                    receitaItem.getComida().getCalorias(),
+                    receitaItem.getComida().getProteinas(),
+                    receitaItem.getComida().getCarboidrato(),
+                    receitaItem.getComida().getGordura(),
                     receitaItem.getComida().getNome(),
                     receitaItem.getQuantidade(),
                     receitaItem.getValor(),
@@ -200,7 +216,11 @@ public class ReceitaService {
         }
         else{
            ReceitaItemUsuario receitaItem= atualizarItemUsuario(id,dto.getQuantidade(),receitaId,dto.getValor());
-            return new ReceitaItemDTO(receitaItem.getComida().getCalorias(),
+            return new ReceitaItemDTO(
+                    receitaItem.getComida().getCalorias(),
+                    receitaItem.getComida().getProteinas(),
+                    receitaItem.getComida().getCarboidrato(),
+                    receitaItem.getComida().getGordura(),
                     receitaItem.getComida().getNome(),
                     receitaItem.getQuantidade(),
                     receitaItem.getValor(),
@@ -267,27 +287,60 @@ public class ReceitaService {
 
     private List<ReceitaItemDTO> TransformarItemSistemaEmDTO(List<ReceitaItem> itens){
 
-      return  itens.stream()
-                .map((receitaItem) -> new ReceitaItemDTO(
-                        receitaItem.getComida().getCalorias(),
-                        receitaItem.getComida().getNome(),
-                        receitaItem.getQuantidade(),
-                        receitaItem.getValor(),
-                        Origem.SISTEMA
-                ))
-                .toList();
+
+         List<ReceitaItemDTO> listaDTO = new ArrayList<>();
+        for(ReceitaItem receitaItem:itens){
+
+            ReceitaItemDTO receitaItemDTO = new ReceitaItemDTO(
+                    receitaItem.getComida().getCalorias(),
+                    receitaItem.getComida().getProteinas(),
+                    receitaItem.getComida().getCarboidrato(),
+                    receitaItem.getComida().getGordura(),
+                    receitaItem.getComida().getNome(),
+                    receitaItem.getQuantidade(),
+                    receitaItem.getValor(),
+                    Origem.SISTEMA);
+
+            MacroDTO macro = CalcularQuantidade.calcularMacros(receitaItem.getComida(),receitaItem.getValor());
+
+            receitaItemDTO.setCalorias(macro.getCalorias());
+            receitaItemDTO.setProteinas(macro.getProteinas());
+            receitaItemDTO.setCarboidrato(macro.getCarboidrato());
+            receitaItemDTO.setGordura(macro.getGordura());
+            listaDTO.add(receitaItemDTO);
+        }
+
+
+
+        return listaDTO;
     }
     private List<ReceitaItemDTO> TransformarItemUsuarioEmDTO(List<ReceitaItemUsuario> itens){
 
-        return  itens.stream()
-                .map((receitaItemUsuario) -> new ReceitaItemDTO(
-                        receitaItemUsuario.getComida().getCalorias(),
-                        receitaItemUsuario.getComida().getNome(),
-                        receitaItemUsuario.getQuantidade(),
-                        receitaItemUsuario.getValor(),
-                        Origem.USUARIO
-                ))
-                .toList();
+        List<ReceitaItemDTO> listaDTO = new ArrayList<>();
+        for(ReceitaItemUsuario receitaItem:itens){
+
+            ReceitaItemDTO receitaItemDTO = new ReceitaItemDTO(
+                    receitaItem.getComida().getCalorias(),
+                    receitaItem.getComida().getProteinas(),
+                    receitaItem.getComida().getCarboidrato(),
+                    receitaItem.getComida().getGordura(),
+                    receitaItem.getComida().getNome(),
+                    receitaItem.getQuantidade(),
+                    receitaItem.getValor(),
+                    Origem.USUARIO);
+
+            MacroDTO macro = CalcularQuantidade.calcularMacros(receitaItem.getComida(),receitaItem.getValor());
+
+            receitaItemDTO.setCalorias(macro.getCalorias());
+            receitaItemDTO.setProteinas(macro.getProteinas());
+            receitaItemDTO.setCarboidrato(macro.getCarboidrato());
+            receitaItemDTO.setGordura(macro.getGordura());
+            listaDTO.add(receitaItemDTO);
+        }
+
+
+
+        return listaDTO;
     }
 
     public List<ReceitaItemDTO> listarReceitaItem(Long receitaId){
@@ -297,6 +350,7 @@ public class ReceitaService {
         List<ReceitaItemDTO> listaResultado = new ArrayList<>();
         List<ReceitaItem> lista = itemRepository.findAllByReceitaId(receitaId);
         List<ReceitaItemUsuario> listaUsuario = receitaItemUsuarioRepository.findAllByReceitaId(receitaId);
+
 
         listaResultado.addAll(
         TransformarItemSistemaEmDTO(lista));
@@ -315,7 +369,6 @@ public class ReceitaService {
 
         return lista.stream()
                 .map((receita) -> new ReceitaDTO(
-                        receita.getId(),
                         receita.getNome()
                 ))
                 .toList();

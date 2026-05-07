@@ -67,6 +67,7 @@ public class MedidasCorporaisService {
             atualizado.setAltura(dto.getAltura());
             atualizado.setData(LocalDate.now());
             atualizado.setUsuario(usuario);
+            atualizado.setPeso(dto.getPeso());
             if(dto.getPercentualGordura() != null) {
                 atualizado.setPercentualGordura(dto.getPercentualGordura());
             }

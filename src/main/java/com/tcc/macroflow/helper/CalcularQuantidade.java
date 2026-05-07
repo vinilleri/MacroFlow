@@ -2,6 +2,8 @@ package com.tcc.macroflow.helper;
 
 import com.tcc.macroflow.dto.ComidaDTO;
 import com.tcc.macroflow.dto.ComidaResponseDTO;
+import com.tcc.macroflow.dto.MacroDTO;
+import com.tcc.macroflow.dto.ReceitaItemDTO;
 import com.tcc.macroflow.model.Comida;
 import com.tcc.macroflow.model.ComidaUsuario;
 import com.tcc.macroflow.model.Unidade;
@@ -15,10 +17,6 @@ public class CalcularQuantidade {
             BigDecimal valor,
             ComidaResponseDTO comida
     ){
-
-
-
-
         return quantidade.multiply(valor)
                 .divide(comida.getValor(),4, RoundingMode.HALF_UP);
     }
@@ -47,6 +45,39 @@ public class CalcularQuantidade {
                 comida.getValor()
         );
     }
+
+    public static MacroDTO calcularMacros(Comida comida, BigDecimal valor){
+
+
+        BigDecimal totalCalorias = comida.getCalorias().multiply(valor.divide(comida.getValor(),
+                2,RoundingMode.HALF_UP));
+        BigDecimal totalProteinas = comida.getProteinas().multiply(valor.divide(comida.getValor(),
+                2,RoundingMode.HALF_UP));
+        BigDecimal totalCarboidrato = comida.getCarboidrato().multiply(valor.divide(comida.getValor(),
+                2,RoundingMode.HALF_UP));
+        BigDecimal totalGordura= comida.getGordura().multiply(valor.divide(comida.getValor(),
+                2,RoundingMode.HALF_UP));
+
+        return new MacroDTO(totalCalorias,totalProteinas,totalCarboidrato,totalGordura);
+    }
+    public static MacroDTO calcularMacros(ComidaUsuario comida, BigDecimal valor){
+
+        BigDecimal fator = valor.divide(comida.getValor(),
+                2, RoundingMode.HALF_UP);
+
+        BigDecimal totalCalorias = comida.getCalorias().multiply(fator);
+        BigDecimal totalProteinas = comida.getProteinas().multiply(fator);
+        BigDecimal totalCarboidrato = comida.getCarboidrato().multiply(fator);
+        BigDecimal totalGordura = comida.getGordura().multiply(fator);
+
+        return new MacroDTO(
+                totalCalorias,
+                totalProteinas,
+                totalCarboidrato,
+                totalGordura
+        );
+    }
+
 
 
 }
