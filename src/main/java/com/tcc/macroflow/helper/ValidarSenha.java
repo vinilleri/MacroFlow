@@ -8,9 +8,12 @@ public class ValidarSenha {
            throw new RuntimeException("Senha não pode ter menos de 8 caractéres");
        }
 
-       if(!senha.matches(".*[a-z].* ") || !senha.matches(".*[A-Z].* ")){
-           throw new RuntimeException("Senha precisa de caractéres minúsculos e maiúsculos");
+       if(!senha.matches(".*[a-z].*")){
+           throw new RuntimeException("Senha precisa de caractéres minúsculos");
        }
+       if(!senha.matches(".*[A-Z].*")){
+            throw new RuntimeException("Senha precisa de caractéres maiùsculos");
+        }
 
        if(!senha.matches(".*\\d.*")){
            throw new RuntimeException("Senha precisa de números");

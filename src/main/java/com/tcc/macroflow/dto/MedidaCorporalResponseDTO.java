@@ -1,5 +1,6 @@
 package com.tcc.macroflow.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tcc.macroflow.enums.Sexo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,8 +19,9 @@ public class MedidaCorporalResponseDTO {
 
     private BigDecimal circuferenciaCintura;
 
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dataNascimento;
     private Sexo sexo;
-
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate data;
 }

@@ -1,5 +1,6 @@
 package com.tcc.macroflow.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tcc.macroflow.enums.TipoConsumo;
 import lombok.Data;
 
@@ -18,5 +19,6 @@ public class ConsumoItemDTO {
     private BigDecimal proteinas;
     private BigDecimal carboidrato;
     private BigDecimal gordura;
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime dataHora;
 }

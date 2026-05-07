@@ -59,9 +59,9 @@ private final TokenService tokenService;
 }
 }
     @PostMapping("/login")
-    public ResponseEntity<?> verificarLogin(@RequestBody UsuarioDTO login) throws Exception {
-        if(usuarioService.verificarLogin(login.getEmail(), login.getSenha())){
-            Usuario usuario = usuarioService.buscarPorEmail(login.getEmail());
+    public ResponseEntity<?> verificarLogin(@RequestParam String email, @RequestParam String senha) throws Exception {
+        if(usuarioService.verificarLogin(email, senha)){
+            Usuario usuario = usuarioService.buscarPorEmail(email);
             CodigoEmail ultimoCodigoEmail = emailService.buscarUltimo(usuario.getId());
             if(ultimoCodigoEmail != null && ultimoCodigoEmail.getDataCriacao().plusSeconds(10).isAfter(LocalDateTime.now())){
                 throw new RuntimeException("Aguarde 10 segundos para solicitar outro código");

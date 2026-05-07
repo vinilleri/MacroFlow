@@ -36,8 +36,9 @@ public class MedidasCorporaisService {
     public MedidaCorporalResponseDTO salvarMedida(MedidaCorporalDTO dto){
         MedidasCorporais salvo = new MedidasCorporais();
         Usuario usuario = authService.getUsuario();
+        salvo.setPeso(dto.getPeso());
         salvo.setAltura(dto.getAltura());
-        salvo.setData(dto.getData());
+        salvo.setData(LocalDate.now());
         salvo.setUsuario(usuario);
         if(dto.getPercentualGordura() != null) {
             salvo.setPercentualGordura(dto.getPercentualGordura());
@@ -64,7 +65,7 @@ public class MedidasCorporaisService {
 
         if(atualizado.getUsuario().getId().equals(usuario.getId())) {
             atualizado.setAltura(dto.getAltura());
-            atualizado.setData(dto.getData());
+            atualizado.setData(LocalDate.now());
             atualizado.setUsuario(usuario);
             if(dto.getPercentualGordura() != null) {
                 atualizado.setPercentualGordura(dto.getPercentualGordura());
