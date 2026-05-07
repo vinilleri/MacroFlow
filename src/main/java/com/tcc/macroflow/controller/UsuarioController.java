@@ -2,6 +2,7 @@ package com.tcc.macroflow.controller;
 
 
 import com.tcc.macroflow.dto.EmailDTO;
+import com.tcc.macroflow.dto.LogarDTO;
 import com.tcc.macroflow.dto.UsuarioDTO;
 import com.tcc.macroflow.model.CodigoEmail;
 import com.tcc.macroflow.model.Usuario;
@@ -59,15 +60,16 @@ private final TokenService tokenService;
 }
 }
     @PostMapping("/login")
-    public ResponseEntity<?> verificarLogin(@RequestParam String email, @RequestParam String senha) throws Exception {
-        if(usuarioService.verificarLogin(email, senha)){
-            Usuario usuario = usuarioService.buscarPorEmail(email);
+    public ResponseEntity<?> verificarLogin(@RequestBody LogarDTO logarDTO) throws Exception {
+        if(usuarioService.verificarLogin(logarDTO.getEmail(),logarDTO.getSenha())){
+            Usuario usuario = usuarioService.buscarPorEmail(logarDTO.getEmail());
             CodigoEmail ultimoCodigoEmail = emailService.buscarUltimo(usuario.getId());
             if(ultimoCodigoEmail != null && ultimoCodigoEmail.getDataCriacao().plusSeconds(10).isAfter(LocalDateTime.now())){
                 throw new RuntimeException("Aguarde 10 segundos para solicitar outro código");
             }
 
                 CodigoEmail codigoEmail = emailService.gerarCodigo(usuario);
+
 
                 if (codigoEmail != null) {
                     emailService.enviarCodigo(usuario.getEmail(), codigoEmail);

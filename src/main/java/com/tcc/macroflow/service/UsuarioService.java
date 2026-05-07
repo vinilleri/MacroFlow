@@ -90,6 +90,7 @@ public class UsuarioService {
 
     public boolean verificarLogin(String email, String senha) {
 
+        System.out.println(email+" "+senha);
         Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("usuário não encontrado"));
         return passwordEncoder.matches(senha, usuario.getSenha());
 
