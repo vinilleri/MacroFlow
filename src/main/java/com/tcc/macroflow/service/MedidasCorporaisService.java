@@ -22,6 +22,7 @@ public class MedidasCorporaisService {
     }
     private MedidaCorporalResponseDTO converterParaResponseDTO(MedidasCorporais medida) {
         return new MedidaCorporalResponseDTO(
+                medida.getId(),
                 medida.getPeso(),
                 medida.getAltura(),
                 medida.getPercentualGordura(),

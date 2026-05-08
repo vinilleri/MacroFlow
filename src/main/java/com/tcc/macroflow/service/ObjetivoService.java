@@ -32,7 +32,7 @@ public class ObjetivoService {
 
 
     private ObjetivoResponseDTO converterEmDto(Objetivo objetivo){
-       return new ObjetivoResponseDTO(objetivo.getDataInicio(),objetivo.getDataFim(),objetivo.getTipoObjetivo().getId());
+       return new ObjetivoResponseDTO(objetivo.getId(),objetivo.getDataInicio(),objetivo.getDataFim(),objetivo.getTipoObjetivo().getId());
     }
     @Transactional
     public ObjetivoResponseDTO salvar(ObjetivoDTO dto){

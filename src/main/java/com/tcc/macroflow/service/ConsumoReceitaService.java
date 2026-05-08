@@ -51,7 +51,7 @@ public class ConsumoReceitaService {
         consumoReceita.setQuantidade(dto.getQuantidade());
         consumoReceitaRepository.save(consumoReceita);
 
-        return new ConsumoReceitaResponseDTO(consumo.getId(), receita.getId(),consumoReceita.getQuantidade());
+        return new ConsumoReceitaResponseDTO(consumoReceita.getId(),consumo.getId(), receita.getId(),consumoReceita.getQuantidade());
     }
 
 
@@ -74,7 +74,7 @@ public class ConsumoReceitaService {
             atualizado.setReceita(receita);
             atualizado.setQuantidade(dto.getQuantidade());
             consumoReceitaRepository.save(atualizado);
-            return new ConsumoReceitaResponseDTO(atualizado.getConsumo().getId(),
+            return new ConsumoReceitaResponseDTO(atualizado.getId(),atualizado.getConsumo().getId(),
                     atualizado.getReceita().getId(), atualizado.getQuantidade());
         }
         else throw  new RuntimeException("Consumo não pertence a esse usuário");

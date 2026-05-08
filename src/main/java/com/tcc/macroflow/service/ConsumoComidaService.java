@@ -76,12 +76,12 @@ public class ConsumoComidaService {
         if(dto.getOrigem().equals(Origem.SISTEMA)) {
             ConsumoComida consumoComida = consumirComidaSistema(dto,consumo);
             consumoComidaRepository.save(consumoComida);
-            return new ConsumoComidaResponseDTO(consumo.getId(), consumoComida.getComida().getId(), consumoComida.getQuantidade());
+            return new ConsumoComidaResponseDTO(consumoComida.getId(),consumo.getId(), consumoComida.getComida().getId(), consumoComida.getQuantidade());
         }
         else{
             ConsumoComidaUsuario consumoComidaUsuario = consumirComidaUsuario(dto,consumo);
             consumoUsuarioRepository.save(consumoComidaUsuario);
-            return new ConsumoComidaResponseDTO(consumo.getId(), consumoComidaUsuario.getComidaUsuario().getId(),
+            return new ConsumoComidaResponseDTO(consumoComidaUsuario.getId(),consumo.getId(), consumoComidaUsuario.getComidaUsuario().getId(),
                     consumoComidaUsuario.getQuantidade());
         }
     }
@@ -128,13 +128,13 @@ public class ConsumoComidaService {
         if (dto.getOrigem().equals(Origem.SISTEMA)) {
                  ConsumoComida atualizado = atualizarConsumoSistema(usuario,dto,id);
                 consumoComidaRepository.save(atualizado);
-                return new ConsumoComidaResponseDTO(atualizado.getConsumo().getId(),
+                return new ConsumoComidaResponseDTO(atualizado.getId(),atualizado.getConsumo().getId(),
                         atualizado.getComida().getId(), atualizado.getQuantidade());
 
         } else {
                  ConsumoComidaUsuario atualizado = atualizarConsumoUsuario(usuario,dto,id);
                 consumoUsuarioRepository.save(atualizado);
-                return new ConsumoComidaResponseDTO(atualizado.getConsumo().getId(),
+                return new ConsumoComidaResponseDTO(atualizado.getId(),atualizado.getConsumo().getId(),
                         atualizado.getComidaUsuario().getId(), atualizado.getQuantidade());
 
         }

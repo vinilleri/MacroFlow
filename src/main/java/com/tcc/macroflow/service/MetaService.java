@@ -35,7 +35,7 @@ public class MetaService {
 
 
     private MetaResponseDTO converterMetaEmDTO(Meta meta){
-        return new MetaResponseDTO(meta.getCalorias(),meta.getProteinas(),meta.getCarboidrato(),meta.getGordura()
+        return new MetaResponseDTO(meta.getId(),meta.getCalorias(),meta.getProteinas(),meta.getCarboidrato(),meta.getGordura()
                 , meta.getDataInicio(), meta.getDataFim(), meta.getObjetivo().getId(), meta.getTipoMeta());
     }
 
