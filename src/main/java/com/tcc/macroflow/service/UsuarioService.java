@@ -96,10 +96,6 @@ public class UsuarioService {
 
     }
 
-    public Usuario buscarPorId(Long usuarioID){
-        return usuarioRepository.findById(usuarioID).orElseThrow(() -> new RuntimeException("usuario não encontrado"));
-    }
-
     public void deslogar(){
         Usuario usuario = authService.getUsuario();
         usuario.setAtivo(false);
