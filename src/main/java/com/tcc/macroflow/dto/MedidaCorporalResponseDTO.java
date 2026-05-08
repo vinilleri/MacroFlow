@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Data
 public class MedidaCorporalResponseDTO {
-
+    private Long id;
     private BigDecimal peso;
 
     private Integer altura;

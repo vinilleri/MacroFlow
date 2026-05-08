@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Data
 public class MetaResponseDTO {
+    private Long id;
     private BigDecimal calorias;
     private BigDecimal proteinas;
     private BigDecimal carboidrato;

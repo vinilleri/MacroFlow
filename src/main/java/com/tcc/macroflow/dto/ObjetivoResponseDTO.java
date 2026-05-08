@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import java.time.LocalDate;
 @AllArgsConstructor
 public class ObjetivoResponseDTO {
+    private Long id;
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dataInicio;
     @JsonFormat(pattern = "dd/MM/yyyy")

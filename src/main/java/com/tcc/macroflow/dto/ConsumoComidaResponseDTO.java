@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 public class ConsumoComidaResponseDTO {
-
+ private Long id;
     private Long consumoId;
 
     private Long comidaId;
