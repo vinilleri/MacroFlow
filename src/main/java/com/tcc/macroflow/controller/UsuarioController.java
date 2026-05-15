@@ -31,6 +31,11 @@ private final TokenService tokenService;
         this.tokenService = tokenService;
     }
 
+    @GetMapping
+    public ResponseEntity<?> usuarioAtual() {
+        Usuario usuario = usuarioService.usuarioAtual();
+        return ResponseEntity.ok(usuario);
+    }
 
     @PostMapping
     public ResponseEntity<?> salvar(@RequestBody UsuarioDTO usuarioDTO){

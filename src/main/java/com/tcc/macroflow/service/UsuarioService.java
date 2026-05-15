@@ -28,6 +28,12 @@ public class UsuarioService {
         this.authService = authService;
     }
 
+
+    public Usuario usuarioAtual(){
+
+        return  authService.getUsuario();
+    }
+
     @Transactional
     public Usuario salvar(UsuarioDTO dto) {
 
