@@ -1,10 +1,12 @@
-
 FROM eclipse-temurin:21-jdk
 
 WORKDIR /app
 
-COPY target/macroflow-0.0.1-SNAPSHOT.jar app.jar
+COPY . .
+
+RUN chmod +x mvnw
+RUN ./mvnw clean package -DskipTests
 
 EXPOSE 8080
 
-CMD ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "target/macroflow-0.0.1-SNAPSHOT.jar"]
