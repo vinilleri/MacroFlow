@@ -7,9 +7,14 @@ import com.tcc.macroflow.repository.UsuarioRepository;
 import jakarta.mail.internet.MimeMessage;
 
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 
 import java.security.SecureRandom;
@@ -21,15 +26,14 @@ public class EmailService
 
     private final EmailRepository emailRepository;
     private final UsuarioRepository usuarioRepository;
-    private final JavaMailSender mailSender;
+    @Value("${resend.api.key}")
+    private String apiKey;
     private static final SecureRandom random = new SecureRandom();
 
 
-    public EmailService(EmailRepository emailRepository, UsuarioRepository usuarioRepository, JavaMailSender mailSender) {
+    public EmailService(EmailRepository emailRepository, UsuarioRepository usuarioRepository) {
         this.emailRepository = emailRepository;
         this.usuarioRepository = usuarioRepository;
-
-        this.mailSender = mailSender;
     }
 
     public  CodigoEmail gerarCodigo (Usuario usuario){
@@ -49,11 +53,11 @@ public class EmailService
     }
 
     public void enviarCodigo(String destino, CodigoEmail codigoEmail) throws Exception {
-        MimeMessage mensagem = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mensagem, true, "UTF-8");
-        helper.setFrom("onboarding@resend.dev");
-        helper.setTo(destino);
-        helper.setSubject("Código de Verificação");
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(apiKey);
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
         String html = """
         <div style="font-family: Arial; text-align: center;">
@@ -73,10 +77,24 @@ public class EmailService
             <p style="margin-top: 20px;">Esse código expira em alguns minutos.</p>
         </div>
     """;
+        String body = """
+        {
+          "from": "onboarding@resend.dev",
+          "to": ["%s"],
+          "subject": "Código de Verificação",
+          "html": "%s"
+        }
+        """.formatted(
+                destino,
+                html.replace("\"", "\\\"").replace("\n", "")
+        );
+        HttpEntity<String> request = new HttpEntity<>(body, headers);
 
-        helper.setText(html, true);
-
-        mailSender.send(mensagem);
+        restTemplate.postForEntity(
+                "https://api.resend.com/emails",
+                request,
+                String.class
+        );
     }
 
     @Transactional
