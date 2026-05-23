@@ -54,6 +54,19 @@ private final TokenService tokenService;
         }
     }
 
+    @PatchMapping("/atividadeFisica")
+    public ResponseEntity<?> atualizarAtividadeFisica(@RequestParam Long atividadeFisicaId){
+
+        try{
+            Usuario atualizado = usuarioService.mudarAtividadeFisica(atividadeFisicaId);
+
+            return ResponseEntity.ok(atualizado);
+        }
+        catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
     @DeleteMapping
     public ResponseEntity<?> deletar(){
     try {

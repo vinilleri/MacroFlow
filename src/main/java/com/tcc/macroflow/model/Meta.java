@@ -34,7 +34,7 @@ public class Meta {
 
     @Column(nullable = false)
     private LocalDate dataInicio;
-    @Column(nullable = false)
+    @Column
     private LocalDate dataFim;
     @Column(nullable = false)
     private boolean ativa;

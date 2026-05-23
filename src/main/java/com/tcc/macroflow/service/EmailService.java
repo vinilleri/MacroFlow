@@ -60,23 +60,43 @@ public class EmailService
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         String html = """
-        <div style="font-family: Arial; text-align: center;">
-            <h2>Verificação de Conta</h2>
-            <p>Use o código abaixo para verificar seu email:</p> 
-            <div style="
-                font-size: 24px;
-                font-weight: bold;
-                background-color: #f2f2f2;
-                padding: 10px;
-                display: inline-block;
-                border-radius: 8px;
-            ">
-                """ + codigoEmail.getCodigo() + """
-            </div>
+<div style="font-family: Arial, sans-serif; text-align:center; background-color:#f9f9f9; padding:40px 0;">
 
-            <p style="margin-top: 20px;">Esse código expira em alguns minutos.</p>
-        </div>
-    """;
+  <div style="background-color:#ffffff; max-width:400px; margin:0 auto; border-radius:8px; overflow:hidden; box-shadow:0 4px 8px rgba(0,0,0,0.1);">
+
+    <div style="background-color:#71ffa7; height:15px;"></div>
+
+    <div style="padding:30px;">
+
+      <h2 style="color:#333333;">Verificação de Conta</h2>
+
+      <p style="color:#666666; font-size:16px;">
+        Use o código abaixo para verificar seu email:
+      </p>
+
+      <div style="
+        font-size:32px;
+        font-weight:bold;
+        letter-spacing:4px;
+        color:#333333;
+        background-color:#f2f2f2;
+        padding:20px 40px;
+        margin:25px auto;
+        display:inline-block;
+        border-radius:8px;
+        border:1px solid #e0e0e0;
+      ">
+        """ + codigoEmail.getCodigo() + """
+      </div>
+
+      <p style="color:#888888; font-size:14px;">
+        Esse código expira em alguns minutos.
+      </p>
+
+    </div>
+  </div>
+</div>
+""";
         String body = """
         {
           "from": "onboarding@resend.dev",

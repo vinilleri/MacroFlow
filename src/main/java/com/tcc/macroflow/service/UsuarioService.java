@@ -61,10 +61,11 @@ public class UsuarioService {
     public Usuario editar( UsuarioDTO usuario) {
 
 
-        Usuario atualizado =  authService.getUsuario();
+        Usuario atualizado =  usuarioAtual();
 
-
-        atualizado.setNome(usuario.getNome());
+        if(usuario.getNome() != null) {
+            atualizado.setNome(usuario.getNome());
+        }
         if(usuario.getSenha() != null && !usuario.getSenha().isEmpty()) {
             atualizado.setSenha(passwordEncoder.encode(usuario.getSenha()));
         }
@@ -76,6 +77,7 @@ public class UsuarioService {
                 throw new RuntimeException("Email já existe");
             }
         }
+
         atualizado.setEmail(usuario.getEmail());
 
         AtividadeFisica atividadeFisica = atividadeFisicaRepository.findById(usuario.getAtividadeFisicaId())
@@ -84,6 +86,22 @@ public class UsuarioService {
         atualizado.setAtividadeFisica(atividadeFisica);
 
         return usuarioRepository.save(atualizado);
+
+
+    }
+
+    public Usuario mudarAtividadeFisica(Long atividadeFisicaId){
+        Usuario atualizado = usuarioAtual();
+
+        AtividadeFisica atividadeFisica = atividadeFisicaRepository.findById(atividadeFisicaId).orElseThrow(
+                () -> new RuntimeException("Atividade física não encontrada")
+        );
+
+        atualizado.setAtividadeFisica(atividadeFisica);
+
+        usuarioRepository.save(atualizado);
+
+        return atualizado;
 
 
     }
