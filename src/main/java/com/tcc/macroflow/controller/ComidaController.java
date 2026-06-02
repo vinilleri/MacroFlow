@@ -34,6 +34,12 @@ public class ComidaController {
         return ResponseEntity.ok(lista);
     }
 
+    @GetMapping("/todos")
+    public ResponseEntity<List<ComidaResponseDTO>> listarComidasGerais(){
+        List<ComidaResponseDTO> lista = comidaService.listarComidas();
+        return ResponseEntity.ok(lista);
+    }
+
     @GetMapping
     public ResponseEntity<List<Comida>> listarComidas(){
         List<Comida> lista = comidaService.listarComida();

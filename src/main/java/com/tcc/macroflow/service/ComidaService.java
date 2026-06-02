@@ -3,6 +3,7 @@ package com.tcc.macroflow.service;
 
 import com.tcc.macroflow.dto.ComidaDTO;
 import com.tcc.macroflow.dto.ComidaResponseDTO;
+import  com.tcc.macroflow.helper.CalcularQuantidade;
 import com.tcc.macroflow.model.Comida;
 import com.tcc.macroflow.model.ComidaUsuario;
 import com.tcc.macroflow.model.Unidade;
@@ -13,6 +14,7 @@ import com.tcc.macroflow.repository.UnidadeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -29,6 +31,7 @@ private final UnidadeRepository unidadeRepository;
         this.authService = authService;
         this.unidadeRepository = unidadeRepository;
     }
+
 
     @Transactional
     public ComidaResponseDTO salvar (ComidaDTO comidaDTO){
@@ -57,15 +60,7 @@ private final UnidadeRepository unidadeRepository;
         comidaUsuarioRepository.save(comidaUsuario);
 
 
-        return new ComidaResponseDTO(comidaUsuario.getId(),
-                comidaUsuario.getNome(),
-                comidaUsuario.getCalorias(),
-                comidaUsuario.getProteinas(),
-                comidaUsuario.getCarboidrato(),
-                comidaUsuario.getGordura(),
-                comidaUsuario.getIcone(),
-                comidaUsuario.getUnidade().getId(),
-                comidaUsuario.getValor());
+        return CalcularQuantidade.converterComidaUsuarioEmDto(comidaUsuario);
     }
 
     @Transactional
@@ -106,15 +101,7 @@ private final UnidadeRepository unidadeRepository;
         atualizado.setUnidade(unidade);
         atualizado.setValor(comida.getValor());
         comidaUsuarioRepository.save(atualizado);
-        return new ComidaResponseDTO(atualizado.getId(),
-                atualizado.getNome(),
-                atualizado.getCalorias(),
-                atualizado.getProteinas(),
-                atualizado.getCarboidrato(),
-                atualizado.getGordura(),
-                atualizado.getIcone(),
-                atualizado.getUnidade().getId(),
-                atualizado.getValor());
+        return CalcularQuantidade.converterComidaUsuarioEmDto(atualizado);
 
     }
 
@@ -124,20 +111,26 @@ private final UnidadeRepository unidadeRepository;
         return comidaRepository.findAll();
     }
 
+    public List<ComidaResponseDTO> listarComidas(){
+        List<ComidaResponseDTO> listaUsuario = listarComidaUsuario();
+        List<Comida> listaComida = listarComida();
+
+        List<ComidaResponseDTO> listaComidaConvertida = listaComida.stream()
+                .map(CalcularQuantidade:: converterComidaEmDto)
+                .toList();
+
+        List<ComidaResponseDTO> listaTotal = new ArrayList<>(listaComidaConvertida);
+        listaTotal.addAll(listaUsuario);
+
+        return listaTotal;
+
+    }
     public List<ComidaResponseDTO> listarComidaUsuario(){
         Usuario usuario = authService.getUsuario();
         List<ComidaUsuario> lista = comidaUsuarioRepository.findAllByUsuarioId(usuario.getId());
 
        return lista.stream()
-                .map((comidaUsuario) -> new ComidaResponseDTO(comidaUsuario.getId(),
-                        comidaUsuario.getNome(),
-                        comidaUsuario.getCalorias(),
-                        comidaUsuario.getProteinas(),
-                        comidaUsuario.getCarboidrato(),
-                        comidaUsuario.getGordura(),
-                        comidaUsuario.getIcone(),
-                        comidaUsuario.getUnidade().getId(),
-                        comidaUsuario.getValor()))
+                .map(CalcularQuantidade::converterComidaUsuarioEmDto)
                 .toList();
     }
 

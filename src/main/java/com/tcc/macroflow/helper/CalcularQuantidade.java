@@ -4,6 +4,7 @@ import com.tcc.macroflow.dto.ComidaDTO;
 import com.tcc.macroflow.dto.ComidaResponseDTO;
 import com.tcc.macroflow.dto.MacroDTO;
 import com.tcc.macroflow.dto.ReceitaItemDTO;
+import com.tcc.macroflow.enums.Origem;
 import com.tcc.macroflow.model.Comida;
 import com.tcc.macroflow.model.ComidaUsuario;
 import com.tcc.macroflow.model.Unidade;
@@ -29,7 +30,9 @@ public class CalcularQuantidade {
                 comida.getCarboidrato(),
                 comida.getGordura(),
                 comida.getIcone(),
+                Origem.SISTEMA,
                 comida.getUnidade().getId(),
+
                 comida.getValor()
                 );
     }
@@ -41,6 +44,7 @@ public class CalcularQuantidade {
                 comida.getCarboidrato(),
                 comida.getGordura(),
                 comida.getIcone(),
+                Origem.USUARIO,
                 comida.getUnidade().getId(),
                 comida.getValor()
         );

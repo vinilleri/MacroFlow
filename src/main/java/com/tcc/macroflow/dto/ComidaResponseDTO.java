@@ -1,6 +1,7 @@
 package com.tcc.macroflow.dto;
 
 import com.tcc.macroflow.enums.Icone;
+import com.tcc.macroflow.enums.Origem;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ public class ComidaResponseDTO {
     private BigDecimal carboidrato;
     private BigDecimal gordura;
     private Icone icone;
+    private Origem origem;
     private Long unidadeId;
     private BigDecimal valor;
 

@@ -76,9 +76,8 @@ public class UsuarioService {
             if (buscaEmail != null) {
                 throw new RuntimeException("Email já existe");
             }
+            atualizado.setEmail(usuario.getEmail());
         }
-
-        atualizado.setEmail(usuario.getEmail());
 
         AtividadeFisica atividadeFisica = atividadeFisicaRepository.findById(usuario.getAtividadeFisicaId())
                 .orElseThrow(() -> new RuntimeException("Atividade física não encontrada"));
