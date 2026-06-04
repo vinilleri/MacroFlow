@@ -48,6 +48,22 @@ public class ReceitaService {
         return new ReceitaResponseDTO(receita.getId(), receita.getNome());
 
     }
+
+
+
+    @Transactional
+    public ReceitaResponseDTO editar(ReceitaDTO dto, Long id){
+        Usuario usuario = authService.getUsuario();
+        Receita receita = receitaRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Receita não encontrada")
+        );
+        receita.setNome(dto.getNome());
+        receita.setUsuario(usuario);
+        receitaRepository.save(receita);
+
+        return new ReceitaResponseDTO(receita.getId(), receita.getNome());
+    }
+
     private Receita buscarReceitaUsuario(Long receitaId){
         Usuario usuario = authService.getUsuario();
         Receita receita = receitaRepository.findById(receitaId).orElseThrow(
@@ -84,7 +100,7 @@ public class ReceitaService {
         }
         return item;
     }
-
+    @Transactional
     public ReceitaItemDTO adicionarItem(ReceitaItemRequestDTO dto, Long receitaId){
        if(dto.getOrigem() == null){throw  new RuntimeException("Origem não pode ser nula");}
 
@@ -117,7 +133,7 @@ public class ReceitaService {
 
     }
 
-    @Transactional
+
     private ReceitaItem adicionarItemSistema(Long comidaId,Receita receita, BigDecimal quantidade, BigDecimal valor){
         if(quantidade.compareTo(BigDecimal.ZERO) <= 0){
             throw new RuntimeException("quantidade invalida");
@@ -156,7 +172,7 @@ public class ReceitaService {
 
 
 
-    @Transactional
+
     private ReceitaItemUsuario adicionarItemUsuario(Long comidaUsuarioId,Receita receita, BigDecimal quantidade,BigDecimal valor){
         if(quantidade.compareTo(BigDecimal.ZERO) <= 0){
             throw new RuntimeException("quantidade invalida");
@@ -198,6 +214,7 @@ public class ReceitaService {
         return receitaItemUsuarioRepository.save(item);
 
     }
+    @Transactional
     public ReceitaItemDTO atualizarItem(ReceitaItemRequestDTO dto, Long receitaId,Long id){
         if(dto.getOrigem() == null){throw  new RuntimeException("Origem não pode ser nula");}
 
@@ -228,7 +245,7 @@ public class ReceitaService {
 
     }
 
-    @Transactional
+
     private ReceitaItem atualizarItemSistema(Long id, BigDecimal quantidadeNova,
                                              Long receitaId,BigDecimal valorNovo){
 
@@ -243,7 +260,7 @@ public class ReceitaService {
         return itemRepository.save(item);
 
     }
-    @Transactional
+
     private ReceitaItemUsuario atualizarItemUsuario(Long id, BigDecimal quantidadeNova,
                                                     Long receitaId,BigDecimal valorNovo){
 
@@ -258,7 +275,7 @@ public class ReceitaService {
 
     }
 
-
+    @Transactional
     public void deletarItem( Origem origem,Long receitaId,Long id){
         if(origem == null){throw  new RuntimeException("Origem não pode ser nula");}
 
@@ -273,12 +290,12 @@ public class ReceitaService {
     }
 
 
-    @Transactional
+
     private void deletarItemSistema(Long id,Long receitaId){
         ReceitaItem item = buscarReceitaItem(id,receitaId);
          itemRepository.delete(item);
     }
-    @Transactional
+
     private void deletarItemUsuario(Long id,Long receitaId){
         ReceitaItemUsuario item = buscarReceitaItemUsuario(id,receitaId);
         receitaItemUsuarioRepository.delete(item);
