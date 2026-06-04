@@ -53,14 +53,11 @@ public class ReceitaService {
 
     @Transactional
     public ReceitaResponseDTO editar(ReceitaDTO dto, Long id){
-        Usuario usuario = authService.getUsuario();
         Receita receita = receitaRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Receita não encontrada")
         );
         receita.setNome(dto.getNome());
-        receita.setUsuario(usuario);
         receitaRepository.save(receita);
-
         return new ReceitaResponseDTO(receita.getId(), receita.getNome());
     }
 
@@ -389,6 +386,49 @@ public class ReceitaService {
                 ))
                 .toList();
     }
+
+    public ReceitaItemDTO getItem(Long id, Origem origem){
+        ReceitaItemDTO response = null;
+        if(origem.equals(Origem.SISTEMA)){
+
+        response = getItemSistema(id);
+        }
+        else{
+            response = getItemUsuario(id);
+        }
+
+        return response;
+    }
+
+    private ReceitaItemDTO getItemSistema(Long id){
+    ReceitaItem receitaItem = itemRepository.findById(id).orElseThrow(
+            () -> new RuntimeException("Nenhum item encontrado")
+    );
+    return  new ReceitaItemDTO(
+            receitaItem.getComida().getCalorias(),
+                    receitaItem.getComida().getProteinas(),
+                    receitaItem.getComida().getCarboidrato(),
+                    receitaItem.getComida().getGordura(),
+                    receitaItem.getComida().getNome(),
+                    receitaItem.getQuantidade(),
+                receitaItem.getValor(),
+                Origem.SISTEMA);
+}
+    private ReceitaItemDTO getItemUsuario(Long id){
+        ReceitaItemUsuario receitaItem = receitaItemUsuarioRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Nenhum item encontrado")
+        );
+        return  new ReceitaItemDTO(
+                receitaItem.getComida().getCalorias(),
+                receitaItem.getComida().getProteinas(),
+                receitaItem.getComida().getCarboidrato(),
+                receitaItem.getComida().getGordura(),
+                receitaItem.getComida().getNome(),
+                receitaItem.getQuantidade(),
+                receitaItem.getValor(),
+                Origem.USUARIO);
+    }
+
     @Transactional
     public void deletarReceita(Long receitaId){
         buscarReceitaUsuario(receitaId);

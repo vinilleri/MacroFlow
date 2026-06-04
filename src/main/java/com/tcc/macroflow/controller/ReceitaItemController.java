@@ -28,6 +28,13 @@ public class ReceitaItemController {
         return ResponseEntity.ok(list);
     }
 
+    @GetMapping("/{itemId}")
+    public ResponseEntity<ReceitaItemDTO> listarItensReceita(@PathVariable Long itemId, @RequestParam Origem origem) {
+
+        ReceitaItemDTO itemDTO = service.getItem(itemId,origem);
+        return ResponseEntity.ok(itemDTO);
+    }
+
     @PostMapping
     public ResponseEntity<?> salvarItensReceita(@RequestBody ReceitaItemRequestDTO dto, @PathVariable Long id) {
         ReceitaItemDTO itemDTO = service.adicionarItem(dto,id);
