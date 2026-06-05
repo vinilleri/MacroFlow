@@ -101,6 +101,9 @@ public class MetaService {
         if(funcao == FuncaoMeta.CRIAR) {
             meta.setObjetivo(objetivo);
         }
+        if(!objetivo.isAtivo()){
+          throw  new RuntimeException("Nenhum objetivo ativo no momento, certifique-se de ter um objetivo criado");
+        }
         meta.setAtiva(true);
         if(funcao == FuncaoMeta.CRIAR){
             meta.setDataInicio(LocalDate.now());

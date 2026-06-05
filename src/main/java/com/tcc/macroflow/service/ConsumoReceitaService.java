@@ -9,6 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class ConsumoReceitaService {
 
@@ -51,7 +54,36 @@ public class ConsumoReceitaService {
         consumoReceita.setQuantidade(dto.getQuantidade());
         consumoReceitaRepository.save(consumoReceita);
 
-        return new ConsumoReceitaResponseDTO(consumoReceita.getId(),consumo.getId(), receita.getId(),consumoReceita.getQuantidade());
+        return converterEmDTO(consumoReceita);
+    }
+
+
+    private ConsumoReceitaResponseDTO converterEmDTO(ConsumoReceita consumoReceita){
+        return new ConsumoReceitaResponseDTO(consumoReceita.getId(),
+                consumoReceita.getConsumo().getId(),
+                 consumoReceita.getReceita().getId(),
+                consumoReceita.getQuantidade());
+    }
+
+    public List<ConsumoReceitaResponseDTO> listarConsumoReceita(){
+        Usuario usuario = authService.getUsuario();
+
+
+        List<ConsumoReceita> consumoReceitas = consumoReceitaRepository.findAllByConsumoUsuarioId(usuario.getId());
+
+        return consumoReceitas.stream()
+                .map(this::converterEmDTO)
+                .toList();
+    }
+
+    public ConsumoReceitaResponseDTO getConsumoReceita(Long id){
+        Usuario usuario = authService.getUsuario();
+
+        ConsumoReceita consumoReceita = consumoReceitaRepository.findByIdAndConsumoUsuarioId(id, usuario.getId()).orElseThrow(
+                () -> new RuntimeException("Nenhum consumo encontrado com esse id")
+        );
+
+        return converterEmDTO(consumoReceita);
     }
 
 
@@ -74,8 +106,7 @@ public class ConsumoReceitaService {
             atualizado.setReceita(receita);
             atualizado.setQuantidade(dto.getQuantidade());
             consumoReceitaRepository.save(atualizado);
-            return new ConsumoReceitaResponseDTO(atualizado.getId(),atualizado.getConsumo().getId(),
-                    atualizado.getReceita().getId(), atualizado.getQuantidade());
+             return converterEmDTO(atualizado);
         }
         else throw  new RuntimeException("Consumo não pertence a esse usuário");
     }

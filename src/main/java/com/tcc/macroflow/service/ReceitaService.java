@@ -53,8 +53,9 @@ public class ReceitaService {
 
     @Transactional
     public ReceitaResponseDTO editar(ReceitaDTO dto, Long id){
-        Receita receita = receitaRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Receita não encontrada")
+        Usuario usuario = authService.getUsuario();
+        Receita receita = receitaRepository.findByIdAndUsuarioId(id, usuario.getId()).orElseThrow(
+                () -> new RuntimeException("Receita não encontrada ou não pertence ao usuário")
         );
         receita.setNome(dto.getNome());
         receitaRepository.save(receita);

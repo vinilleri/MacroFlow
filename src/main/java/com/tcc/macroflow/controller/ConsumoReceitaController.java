@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/consumo/consumo-receita")
 @CrossOrigin("*")
@@ -37,6 +39,21 @@ public class ConsumoReceitaController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
             }
         }
+
+        @GetMapping
+        public ResponseEntity<?> listarConsumoReceita(){
+            List<ConsumoReceitaResponseDTO> lista = consumoReceitaService.listarConsumoReceita();
+
+            return ResponseEntity.ok(lista);
+        }
+
+        @GetMapping("/{id}")
+        public ResponseEntity<?> pegarConsumoReceita(@PathVariable Long id){
+            ConsumoReceitaResponseDTO response = consumoReceitaService.getConsumoReceita(id);
+
+            return ResponseEntity.ok(response);
+        }
+
 
         @DeleteMapping("/{id}")
         public ResponseEntity<?> deletarConsumoReceita(@PathVariable Long id) {

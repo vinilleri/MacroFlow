@@ -25,9 +25,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return   http
+                .cors(cors -> {})
                     .csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests(auth -> auth
-                            .requestMatchers("/api/**").permitAll()
+                            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/usuario").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/usuario/login").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/usuario/login/confirmar/**").permitAll()

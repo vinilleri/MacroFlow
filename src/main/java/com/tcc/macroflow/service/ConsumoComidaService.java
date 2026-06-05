@@ -1,6 +1,7 @@
 package com.tcc.macroflow.service;
 
 
+import com.tcc.macroflow.dto.ComidaResponseDTO;
 import com.tcc.macroflow.enums.Origem;
 import com.tcc.macroflow.dto.ConsumoComidaDTO;
 import com.tcc.macroflow.dto.ConsumoComidaResponseDTO;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ConsumoComidaService {
@@ -76,13 +79,69 @@ public class ConsumoComidaService {
         if(dto.getOrigem().equals(Origem.SISTEMA)) {
             ConsumoComida consumoComida = consumirComidaSistema(dto,consumo);
             consumoComidaRepository.save(consumoComida);
-            return new ConsumoComidaResponseDTO(consumoComida.getId(),consumo.getId(), consumoComida.getComida().getId(), consumoComida.getQuantidade());
+            return converterEmDTOSistema(consumoComida);
         }
         else{
             ConsumoComidaUsuario consumoComidaUsuario = consumirComidaUsuario(dto,consumo);
             consumoUsuarioRepository.save(consumoComidaUsuario);
-            return new ConsumoComidaResponseDTO(consumoComidaUsuario.getId(),consumo.getId(), consumoComidaUsuario.getComidaUsuario().getId(),
-                    consumoComidaUsuario.getQuantidade());
+            return converterEmDTOUsuario(consumoComidaUsuario);
+        }
+    }
+
+
+        private ConsumoComidaResponseDTO converterEmDTOUsuario(ConsumoComidaUsuario consumoComidaUsuario){
+            return new
+                    ConsumoComidaResponseDTO(consumoComidaUsuario.getId(),
+                    consumoComidaUsuario.getConsumo().getId(),
+                    consumoComidaUsuario.getComidaUsuario().getId(),
+                    consumoComidaUsuario.getQuantidade(),
+                    Origem.USUARIO);
+        }
+    private ConsumoComidaResponseDTO converterEmDTOSistema(ConsumoComida consumoComida){
+        return new
+                ConsumoComidaResponseDTO(consumoComida.getId(),
+                consumoComida.getConsumo().getId(),
+                consumoComida.getComida().getId(),
+                consumoComida.getQuantidade(),
+                Origem.SISTEMA);
+    }
+
+    public List<ConsumoComidaResponseDTO> listarConsumosComida(){
+        Usuario usuario = authService.getUsuario();
+
+        List<ConsumoComida> consumoComidas = consumoComidaRepository.findAllByConsumoUsuarioId(usuario.getId());
+        List<ConsumoComidaUsuario> consumoComidaUsuarios = consumoUsuarioRepository.findAllByConsumoUsuarioId(usuario.getId());
+
+        List<ConsumoComidaResponseDTO> listaConjunta = new ArrayList<>();
+
+            listaConjunta.addAll(consumoComidas.stream()
+                    .map(this::converterEmDTOSistema)
+                    .toList());
+            listaConjunta.addAll(consumoComidaUsuarios.stream()
+                .map(this::converterEmDTOUsuario)
+                .toList());
+
+         return listaConjunta;
+
+    }
+
+    public ConsumoComidaResponseDTO getComida(Long id, Origem origem){
+            Usuario usuario = authService.getUsuario();
+
+        if(origem.equals(Origem.SISTEMA)){
+
+                ConsumoComida consumoComida = consumoComidaRepository.findByIdAndConsumoUsuarioId(id, usuario.getId())
+                        .orElseThrow(
+                                () -> new RuntimeException("Comida não encontrada")
+                        );
+              return  converterEmDTOSistema(consumoComida);
+            }
+        else{
+            ConsumoComidaUsuario consumoComidaUsuario = consumoUsuarioRepository.findByIdAndConsumoUsuarioId(id, usuario.getId())
+                    .orElseThrow(
+                            () -> new RuntimeException("Comida não encontrada")
+                    );
+            return  converterEmDTOUsuario(consumoComidaUsuario);
         }
     }
 
@@ -128,14 +187,12 @@ public class ConsumoComidaService {
         if (dto.getOrigem().equals(Origem.SISTEMA)) {
                  ConsumoComida atualizado = atualizarConsumoSistema(usuario,dto,id);
                 consumoComidaRepository.save(atualizado);
-                return new ConsumoComidaResponseDTO(atualizado.getId(),atualizado.getConsumo().getId(),
-                        atualizado.getComida().getId(), atualizado.getQuantidade());
+                return converterEmDTOSistema(atualizado);
 
         } else {
                  ConsumoComidaUsuario atualizado = atualizarConsumoUsuario(usuario,dto,id);
                 consumoUsuarioRepository.save(atualizado);
-                return new ConsumoComidaResponseDTO(atualizado.getId(),atualizado.getConsumo().getId(),
-                        atualizado.getComidaUsuario().getId(), atualizado.getQuantidade());
+                return converterEmDTOUsuario(atualizado);
 
         }
     }

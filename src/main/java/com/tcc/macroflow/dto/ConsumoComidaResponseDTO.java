@@ -1,5 +1,6 @@
 package com.tcc.macroflow.dto;
 
+import com.tcc.macroflow.enums.Origem;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -14,5 +15,7 @@ public class ConsumoComidaResponseDTO {
     private Long comidaId;
 
     private BigDecimal quantidade;
+
+    private Origem origem;
 
 }
