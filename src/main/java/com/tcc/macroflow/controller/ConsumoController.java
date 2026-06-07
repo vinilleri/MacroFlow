@@ -59,6 +59,16 @@ public class ConsumoController{
         }
     }
 
+    @GetMapping("/{id}")
+    public  ResponseEntity<?> buscarConsumo(@PathVariable Long id){
+        try {
+            Consumo consumo = service.buscarConsumo(id);
+            return ResponseEntity.ok(consumo);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        }
+    }
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletarConsumo(@PathVariable Long id) {
         try{

@@ -1,13 +1,11 @@
 package com.tcc.macroflow.helper;
 
-import com.tcc.macroflow.dto.ComidaDTO;
+
 import com.tcc.macroflow.dto.ComidaResponseDTO;
 import com.tcc.macroflow.dto.MacroDTO;
-import com.tcc.macroflow.dto.ReceitaItemDTO;
 import com.tcc.macroflow.enums.Origem;
 import com.tcc.macroflow.model.Comida;
 import com.tcc.macroflow.model.ComidaUsuario;
-import com.tcc.macroflow.model.Unidade;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

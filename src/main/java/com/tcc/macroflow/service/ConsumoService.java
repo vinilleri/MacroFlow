@@ -43,6 +43,14 @@ public class ConsumoService {
         return consumoRepository.findAllByUsuarioIdAndDataHoraBetween(usuario.getId(),
                 hoje.atStartOfDay(), hoje.atTime(23, 59, 59));
     }
+    public Consumo buscarConsumo(Long id){
+        Usuario usuario = authService.getUsuario();
+
+        return consumoRepository.findByIdAndUsuarioId(id, usuario.getId()).orElseThrow(
+                () -> new RuntimeException("Consumo não encontrado")
+        );
+
+    }
 
     private List<Consumo> buscarConsumoPorPeriodo(LocalDateTime inicio,LocalDateTime fim){
         Usuario usuario = authService.getUsuario();

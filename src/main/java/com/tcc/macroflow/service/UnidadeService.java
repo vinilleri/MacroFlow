@@ -18,4 +18,10 @@ public class UnidadeService {
     public List<Unidade> listaUnidade(){
         return unidadeRepository.findAll();
     }
+
+    public Unidade getUnidade(Long id){
+        return unidadeRepository.findById(id).orElseThrow(
+            () -> new RuntimeException("Unidade não encontrada")
+    );
+    }
 }

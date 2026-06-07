@@ -4,11 +4,9 @@ package com.tcc.macroflow.controller;
 import com.tcc.macroflow.model.Unidade;
 import com.tcc.macroflow.service.UnidadeService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,4 +27,18 @@ public class UnidadeController {
 
         return ResponseEntity.ok(lista);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Unidade> buscarUnidade(@PathVariable Long id){
+       try {
+           Unidade unidade = unidadeService.getUnidade(id);
+           return ResponseEntity.ok(unidade);
+       }
+       catch(Exception e){
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+       }
+    }
+
+
 }
