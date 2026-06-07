@@ -299,13 +299,14 @@ public class ReceitaService {
         receitaItemUsuarioRepository.delete(item);
     }
 
-    private List<ReceitaItemDTO> TransformarItemSistemaEmDTO(List<ReceitaItem> itens){
+    private List<ReceitaItemResponseDTO> TransformarItemSistemaEmDTO(List<ReceitaItem> itens){
 
 
-         List<ReceitaItemDTO> listaDTO = new ArrayList<>();
+         List<ReceitaItemResponseDTO> listaDTO = new ArrayList<>();
         for(ReceitaItem receitaItem:itens){
 
-            ReceitaItemDTO receitaItemDTO = new ReceitaItemDTO(
+            ReceitaItemResponseDTO receitaItemDTO = new ReceitaItemResponseDTO(
+                    receitaItem.getId(),
                     receitaItem.getComida().getCalorias(),
                     receitaItem.getComida().getProteinas(),
                     receitaItem.getComida().getCarboidrato(),
@@ -328,12 +329,13 @@ public class ReceitaService {
 
         return listaDTO;
     }
-    private List<ReceitaItemDTO> TransformarItemUsuarioEmDTO(List<ReceitaItemUsuario> itens){
+    private List<ReceitaItemResponseDTO> TransformarItemUsuarioEmDTO(List<ReceitaItemUsuario> itens){
 
-        List<ReceitaItemDTO> listaDTO = new ArrayList<>();
+        List<ReceitaItemResponseDTO> listaDTO = new ArrayList<>();
         for(ReceitaItemUsuario receitaItem:itens){
 
-            ReceitaItemDTO receitaItemDTO = new ReceitaItemDTO(
+            ReceitaItemResponseDTO receitaItemDTO = new ReceitaItemResponseDTO(
+                    receitaItem.getId(),
                     receitaItem.getComida().getCalorias(),
                     receitaItem.getComida().getProteinas(),
                     receitaItem.getComida().getCarboidrato(),
@@ -357,11 +359,11 @@ public class ReceitaService {
         return listaDTO;
     }
 
-    public List<ReceitaItemDTO> listarReceitaItem(Long receitaId){
+    public List<ReceitaItemResponseDTO> listarReceitaItem(Long receitaId){
         buscarReceitaUsuario(receitaId);
 
 
-        List<ReceitaItemDTO> listaResultado = new ArrayList<>();
+        List<ReceitaItemResponseDTO> listaResultado = new ArrayList<>();
         List<ReceitaItem> lista = itemRepository.findAllByReceitaId(receitaId);
         List<ReceitaItemUsuario> listaUsuario = receitaItemUsuarioRepository.findAllByReceitaId(receitaId);
 
@@ -383,13 +385,14 @@ public class ReceitaService {
 
         return lista.stream()
                 .map((receita) -> new ReceitaDTO(
+                        receita.getId(),
                         receita.getNome()
                 ))
                 .toList();
     }
 
-    public ReceitaItemDTO getItem(Long id, Origem origem){
-        ReceitaItemDTO response = null;
+    public ReceitaItemResponseDTO getItem(Long id, Origem origem){
+        ReceitaItemResponseDTO response;
         if(origem.equals(Origem.SISTEMA)){
 
         response = getItemSistema(id);
@@ -401,11 +404,12 @@ public class ReceitaService {
         return response;
     }
 
-    private ReceitaItemDTO getItemSistema(Long id){
+    private ReceitaItemResponseDTO getItemSistema(Long id){
     ReceitaItem receitaItem = itemRepository.findById(id).orElseThrow(
             () -> new RuntimeException("Nenhum item encontrado")
     );
-    return  new ReceitaItemDTO(
+    return  new ReceitaItemResponseDTO(
+            receitaItem.getId(),
             receitaItem.getComida().getCalorias(),
                     receitaItem.getComida().getProteinas(),
                     receitaItem.getComida().getCarboidrato(),
@@ -415,11 +419,12 @@ public class ReceitaService {
                 receitaItem.getValor(),
                 Origem.SISTEMA);
 }
-    private ReceitaItemDTO getItemUsuario(Long id){
+    private ReceitaItemResponseDTO getItemUsuario(Long id){
         ReceitaItemUsuario receitaItem = receitaItemUsuarioRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Nenhum item encontrado")
         );
-        return  new ReceitaItemDTO(
+        return  new ReceitaItemResponseDTO(
+                receitaItem.getId(),
                 receitaItem.getComida().getCalorias(),
                 receitaItem.getComida().getProteinas(),
                 receitaItem.getComida().getCarboidrato(),
@@ -435,6 +440,7 @@ public class ReceitaService {
         buscarReceitaUsuario(receitaId);
         itemRepository.deleteAllByReceitaId(receitaId);
         receitaItemUsuarioRepository.deleteAllByReceitaId(receitaId);
+
         receitaRepository.deleteById(receitaId);
     }
     }

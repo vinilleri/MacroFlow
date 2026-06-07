@@ -1,8 +1,12 @@
 package com.tcc.macroflow.controller;
 
 import com.tcc.macroflow.dto.ConsumoItemDTO;
+import com.tcc.macroflow.dto.ConsumoResultanteDTO;
 import com.tcc.macroflow.dto.MacroDTO;
+import com.tcc.macroflow.model.Consumo;
 import com.tcc.macroflow.service.ConsumoService;
+import org.apache.coyote.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -22,19 +26,48 @@ public class ConsumoController{
     }
 
     @GetMapping("/dia")
-    public ResponseEntity<List<ConsumoItemDTO>> listarConsumoDia(){
-        List<ConsumoItemDTO> consumoDia = service.listarConsumoDia();
+    public ResponseEntity<List<Consumo>> listarConsumoDia(){
+        List<Consumo> consumoDia = service.listarConsumoDia();
         return ResponseEntity.ok(consumoDia);
     }
 
     @GetMapping("/periodo")
-    public ResponseEntity<List<ConsumoItemDTO>> listarConsumoPeriodo(@RequestParam LocalDateTime inicio, @RequestParam LocalDateTime
+    public ResponseEntity<List<Consumo>> listarConsumoPeriodo(@RequestParam LocalDateTime inicio, @RequestParam LocalDateTime
                                                                      fim){
-        List<ConsumoItemDTO> consumoDia = service.listarConsumoPeriodo(inicio,fim);
+        List<Consumo> consumoDia = service.listarConsumoPeriodo(inicio,fim);
         return ResponseEntity.ok(consumoDia);
     }
 
 
+    @PostMapping
+    public ResponseEntity<?> consumirItem(@RequestBody ConsumoItemDTO consumoItemDTO){
+
+        Consumo salvo = service.consumirItem(consumoItemDTO);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editarConsumo(@RequestBody ConsumoItemDTO consumoItemDTO, @PathVariable Long id){
+
+        try{
+            Consumo atualizado = service.editarConsumo(consumoItemDTO, id);
+
+            return ResponseEntity.ok(atualizado);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletarConsumo(@PathVariable Long id) {
+        try{
+            service.deletarConsumo(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
     @GetMapping("/soma/dia")
     public ResponseEntity<MacroDTO> somarConsumoDia(){
         MacroDTO total = service.somarConsumoDia();

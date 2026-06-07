@@ -30,6 +30,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
                     .authorizeHttpRequests(auth -> auth
                             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/usuario").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/atividade-fisica").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/usuario/login").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/usuario/login/confirmar/**").permitAll()
                             .requestMatchers("/v3/api-docs/**").permitAll()

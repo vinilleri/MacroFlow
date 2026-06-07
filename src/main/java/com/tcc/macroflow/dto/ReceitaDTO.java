@@ -6,5 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ReceitaDTO {
+    Long id;
     String nome;
 }

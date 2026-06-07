@@ -1,37 +1,40 @@
 package com.tcc.macroflow.service;
 
-import com.tcc.macroflow.dto.ComidaDTO;
+
+import com.tcc.macroflow.dto.ConsumoResultanteDTO;
+import com.tcc.macroflow.enums.Origem;
 import com.tcc.macroflow.enums.TipoConsumo;
 import com.tcc.macroflow.dto.ConsumoItemDTO;
 import com.tcc.macroflow.dto.MacroDTO;
 import com.tcc.macroflow.helper.CalcularQuantidade;
 import com.tcc.macroflow.model.*;
 import com.tcc.macroflow.repository.*;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+
 @Service
 public class ConsumoService {
-    private final ConsumoReceitaRepository consumoReceitaRepository;
     private final ConsumoRepository consumoRepository;
     private final AuthService authService;
-    private final ConsumoComidaRepository consumoComidaRepository;
-    private final ConsumoComidaUsuarioRepository consumoComidaUsuarioRepository;
     private final ReceitaItemRepository itemRepository;
     private final ReceitaItemUsuarioRepository itemUsuarioRepository;
-    public ConsumoService(ConsumoReceitaRepository consumoReceitaRepository, ConsumoRepository consumoRepository, AuthService authService, ConsumoComidaRepository consumoComidaRepository, ConsumoComidaUsuarioRepository consumoComidaUsuarioRepository, ReceitaItemRepository itemRepository, ReceitaItemUsuarioRepository itemUsuarioRepository) {
-        this.consumoReceitaRepository = consumoReceitaRepository;
+    private final ComidaRepository comidaRepository;
+    private final ComidaUsuarioRepository comidaUsuarioRepository;
+    public ConsumoService(ConsumoRepository consumoRepository, AuthService authService, ReceitaItemRepository itemRepository,
+                          ReceitaItemUsuarioRepository itemUsuarioRepository, ComidaRepository comidaRepository, ComidaUsuarioRepository comidaUsuarioRepository) {
         this.consumoRepository = consumoRepository;
         this.authService = authService;
-        this.consumoComidaRepository = consumoComidaRepository;
-        this.consumoComidaUsuarioRepository = consumoComidaUsuarioRepository;
         this.itemRepository = itemRepository;
         this.itemUsuarioRepository = itemUsuarioRepository;
+        this.comidaRepository = comidaRepository;
+        this.comidaUsuarioRepository = comidaUsuarioRepository;
     }
 
     private List<Consumo> buscarConsumoDia() {
@@ -50,62 +53,119 @@ public class ConsumoService {
         return consumoRepository.findAllByUsuarioIdAndDataHoraBetween(usuario.getId(), inicio,fim);
     }
 
-    private ConsumoItemDTO converterConsumoEmDTO(Consumo consumo){
-        Optional<ConsumoReceita> possivelConsumoReceita = consumoReceitaRepository.findByConsumoId(consumo.getId());
-        ConsumoItemDTO consumoItemDTO = new ConsumoItemDTO();
-        consumoItemDTO.setDataHora(consumo.getDataHora());
-        consumoItemDTO.setConsumoId(consumo.getId());
-
-        if(possivelConsumoReceita.isPresent()){
-            ConsumoReceita consumoReceita = possivelConsumoReceita.get();
-            Receita receita = consumoReceita.getReceita();
-            consumoItemDTO.setNome(receita.getNome());
-            consumoItemDTO.setTipoConsumo(TipoConsumo.RECEITA);
-            consumoItemDTO.setQuantidade(consumoReceita.getQuantidade());
-
-            MacroDTO macroDTO = calcularReceita(receita.getId(), consumoReceita.getQuantidade());
-            consumoItemDTO.setCalorias(macroDTO.getCalorias());
-            consumoItemDTO.setGordura(macroDTO.getGordura());
-            consumoItemDTO.setProteinas(macroDTO.getProteinas());
-            consumoItemDTO.setCarboidrato(macroDTO.getCarboidrato());
-
-            return consumoItemDTO;
+    public Consumo consumirItem(ConsumoItemDTO consumoItem){
+        if(consumoItem.getQuantidade().compareTo(BigDecimal.ZERO) <= 0){
+            throw new RuntimeException("quantidade invalida");
         }
-        Optional<ConsumoComida> possivelConsumoComida = consumoComidaRepository.findByConsumoId(consumo.getId());
-        if(possivelConsumoComida.isPresent()){
-            ConsumoComida consumoComida = possivelConsumoComida.get();
-            Comida comida = consumoComida.getComida();
-
-            consumoItemDTO.setNome(comida.getNome());
-            consumoItemDTO.setTipoConsumo(TipoConsumo.COMIDA);
-            consumoItemDTO.setCarboidrato(comida.getCarboidrato().multiply(consumoComida.getQuantidade()));
-            consumoItemDTO.setGordura(comida.getGordura().multiply(consumoComida.getQuantidade()));
-            consumoItemDTO.setProteinas(comida.getProteinas().multiply(consumoComida.getQuantidade()));
-            consumoItemDTO.setCalorias(comida.getCalorias().multiply(consumoComida.getQuantidade()));
-            consumoItemDTO.setQuantidade(consumoComida.getQuantidade());
-            consumoItemDTO.setUnidadeId(comida.getUnidade().getId());
-
-            return consumoItemDTO;
-        }
-        Optional<ConsumoComidaUsuario> possivelConsumoComidaUsuario = consumoComidaUsuarioRepository.findByConsumoId(consumo.getId());
-        if(possivelConsumoComidaUsuario.isPresent()){
-            ConsumoComidaUsuario consumoComidaUsuario = possivelConsumoComidaUsuario.get();
-            ComidaUsuario comida = consumoComidaUsuario.getComidaUsuario();
-
-            consumoItemDTO.setNome(comida.getNome());
-            consumoItemDTO.setTipoConsumo(TipoConsumo.COMIDA_USUARIO);
-            consumoItemDTO.setCarboidrato(comida.getCarboidrato().multiply(consumoComidaUsuario.getQuantidade()));
-            consumoItemDTO.setGordura(comida.getGordura().multiply(consumoComidaUsuario.getQuantidade()));
-            consumoItemDTO.setProteinas(comida.getProteinas().multiply(consumoComidaUsuario.getQuantidade()));
-            consumoItemDTO.setCalorias(comida.getCalorias().multiply(consumoComidaUsuario.getQuantidade()));
-            consumoItemDTO.setQuantidade(consumoComidaUsuario.getQuantidade());
-
-            return consumoItemDTO;
-        }
-       throw new RuntimeException("Consumo está sem tipo");
+        Usuario usuario = authService.getUsuario();
+        Consumo consumo = new Consumo();
+        consumo.setDataHora(LocalDateTime.now());
+        consumo.setUsuario(usuario);
+        consumo.setNome(consumoItem.getNome());
+        return getConsumo(consumoItem, consumo, consumoItem.getQuantidade());
     }
 
-    private MacroDTO somarMacrosSistema(ReceitaItem i,BigDecimal quantidade){
+    private Consumo getConsumo(ConsumoItemDTO consumoItem, Consumo consumo, BigDecimal quantidade) {
+        MacroDTO macros;
+        ConsumoResultanteDTO consumoResultanteDTO;
+        if(TipoConsumo.RECEITA.equals(consumoItem.getTipoConsumo())){
+            consumo.setQuantidade(quantidade);
+            macros = calcularReceita(consumoItem.getIdReceitaOuComida(),consumoItem.getQuantidade());
+
+        }
+        else if(TipoConsumo.COMIDA.equals(consumoItem.getTipoConsumo())) {
+            consumoResultanteDTO = calcularComida(consumoItem.getIdReceitaOuComida(),consumoItem.getQuantidade(),consumoItem.getValor(), Origem.SISTEMA);
+            macros = consumoResultanteDTO.getMacroDTO();
+            consumo.setQuantidade(consumoResultanteDTO.getQuantidade());
+        }
+        else{
+            consumoResultanteDTO = calcularComida(consumoItem.getIdReceitaOuComida(),consumoItem.getQuantidade(),consumoItem.getValor(), Origem.USUARIO);
+            macros = consumoResultanteDTO.getMacroDTO();
+            consumo.setQuantidade(consumoResultanteDTO.getQuantidade());
+        }
+
+        consumo.setCalorias(macros.getCalorias());
+        consumo.setGordura(macros.getGordura());
+        consumo.setCarboidrato(macros.getCarboidrato());
+        consumo.setProteinas(macros.getProteinas());
+
+        return consumoRepository.save(consumo);
+    }
+
+    @Transactional
+    public Consumo editarConsumo(ConsumoItemDTO consumoItem, Long id){
+        Usuario usuario = authService.getUsuario();
+        Consumo atualizado = consumoRepository.findByIdAndUsuarioId(id, usuario.getId()).orElseThrow(
+                () -> new RuntimeException("Consumo não encontrado, ou não pertence ao usuário")
+        );
+        return getConsumo(consumoItem, atualizado, consumoItem.getQuantidade());
+    }
+
+        @Transactional
+    public void deletarConsumo(Long id){
+        Usuario usuario = authService.getUsuario();
+        Consumo consumo = consumoRepository.findByIdAndUsuarioId(id, usuario.getId()).orElseThrow(
+                () -> new RuntimeException("Consumo não encontrado, ou não pertence ao usuário")
+        );
+
+
+        consumoRepository.delete(consumo);
+
+    }
+
+    private ConsumoResultanteDTO calcularComida(Long comidaId, BigDecimal quantidade, BigDecimal valor, Origem origem){
+
+        BigDecimal totalCaloria = BigDecimal.ZERO;
+        BigDecimal totalProteina = BigDecimal.ZERO;
+        BigDecimal totalCarboidrato = BigDecimal.ZERO;
+        BigDecimal totalGordura = BigDecimal.ZERO;
+        BigDecimal quantidadeFinal;
+
+
+        if(Origem.SISTEMA.equals(origem)) {
+            Comida comida = comidaRepository.findById(comidaId).orElseThrow(
+                    () -> new RuntimeException("Comida não encontrada")
+                    );
+             quantidadeFinal = CalcularQuantidade.calcularQuantidade(quantidade, valor
+                    , CalcularQuantidade.converterComidaEmDto(comida));
+            return getMacroDTO(comida, totalCaloria, totalProteina, totalCarboidrato, totalGordura, quantidadeFinal);
+
+        }
+        else{
+            ComidaUsuario comida = comidaUsuarioRepository.findById(comidaId).orElseThrow(
+                    () -> new RuntimeException("Comida não encontrada")
+            );
+            quantidadeFinal = CalcularQuantidade.calcularQuantidade(quantidade, valor
+                    , CalcularQuantidade.converterComidaUsuarioEmDto(comida));
+            return getMacroDTOUsuario(comida, totalCaloria, totalProteina, totalCarboidrato, totalGordura, quantidadeFinal);
+        }
+
+    }
+
+
+    private ConsumoResultanteDTO getMacroDTO(Comida comida, BigDecimal totalCaloria, BigDecimal totalProteina, BigDecimal totalCarboidrato, BigDecimal totalGordura, BigDecimal quantidadeFinal) {
+        return getConsumoResultante(totalCaloria, totalProteina, totalCarboidrato, totalGordura, quantidadeFinal, comida.getCalorias(), comida.getGordura(), comida.getProteinas(), comida.getCarboidrato());
+    }
+
+    private ConsumoResultanteDTO getMacroDTOUsuario(ComidaUsuario comida, BigDecimal totalCaloria, BigDecimal totalProteina, BigDecimal totalCarboidrato, BigDecimal totalGordura, BigDecimal quantidadeFinal) {
+        return getConsumoResultante(totalCaloria, totalProteina, totalCarboidrato, totalGordura, quantidadeFinal, comida.getCalorias(), comida.getGordura(), comida.getProteinas(), comida.getCarboidrato());
+    }
+
+
+    private ConsumoResultanteDTO getConsumoResultante(BigDecimal totalCaloria, BigDecimal totalProteina, BigDecimal totalCarboidrato,
+                                             BigDecimal totalGordura, BigDecimal quantidadeFinal, BigDecimal calorias,
+                                             BigDecimal gordura, BigDecimal proteinas, BigDecimal carboidrato) {
+        totalCaloria = totalCaloria.add(calorias.multiply(quantidadeFinal));
+        totalGordura = totalGordura.add(gordura.multiply(quantidadeFinal));
+        totalProteina = totalProteina.add(proteinas.multiply(quantidadeFinal));
+        totalCarboidrato = totalCarboidrato.add(carboidrato.multiply(quantidadeFinal));
+        MacroDTO macroDTO = new MacroDTO(totalCaloria,totalProteina,totalCarboidrato,totalGordura);
+
+        return new ConsumoResultanteDTO(macroDTO, quantidadeFinal);
+    }
+
+
+    private MacroDTO somarMacrosSistema(ReceitaItem i, BigDecimal quantidade){
         Comida comida = i.getComida();
         BigDecimal totalCaloria = BigDecimal.ZERO;
         BigDecimal totalProteina = BigDecimal.ZERO;
@@ -115,12 +175,17 @@ public class ConsumoService {
         BigDecimal quantidadeTotal = quantidade.multiply(i.getQuantidade());
         BigDecimal quantidadeFinal = CalcularQuantidade.calcularQuantidade(quantidadeTotal, i.getValor()
                 ,CalcularQuantidade.converterComidaEmDto(comida));
-        totalCaloria = totalCaloria.add(comida.getCalorias().multiply(quantidadeFinal));
-        totalGordura = totalGordura.add(comida.getGordura().multiply(quantidadeFinal));
-        totalProteina = totalProteina.add(comida.getProteinas().multiply(quantidadeFinal));
-        totalCarboidrato = totalCarboidrato.add(comida.getCarboidrato().multiply(quantidadeFinal));
-        return new MacroDTO(totalCaloria,totalProteina,totalCarboidrato,totalGordura);
+        return getMacroDTO(totalCaloria, totalProteina, totalCarboidrato, totalGordura, quantidadeFinal, comida.getCalorias(), comida.getGordura(), comida.getProteinas(), comida.getCarboidrato());
 
+    }
+
+
+    private MacroDTO getMacroDTO(BigDecimal totalCaloria, BigDecimal totalProteina, BigDecimal totalCarboidrato, BigDecimal totalGordura, BigDecimal quantidadeFinal, BigDecimal calorias, BigDecimal gordura, BigDecimal proteinas, BigDecimal carboidrato) {
+        totalCaloria = totalCaloria.add(calorias.multiply(quantidadeFinal));
+        totalGordura = totalGordura.add(gordura.multiply(quantidadeFinal));
+        totalProteina = totalProteina.add(proteinas.multiply(quantidadeFinal));
+        totalCarboidrato = totalCarboidrato.add(carboidrato.multiply(quantidadeFinal));
+        return new MacroDTO(totalCaloria,totalProteina,totalCarboidrato,totalGordura);
     }
 
     private MacroDTO somarMacrosUsuario(ReceitaItemUsuario i,
@@ -134,15 +199,13 @@ public class ConsumoService {
         BigDecimal quantidadeTotal = quantidade.multiply(i.getQuantidade());
         BigDecimal quantidadeFinal = CalcularQuantidade.calcularQuantidade(quantidadeTotal, i.getValor()
                 ,CalcularQuantidade.converterComidaUsuarioEmDto(comida));
-        totalCaloria = totalCaloria.add(comida.getCalorias().multiply(quantidadeFinal));
-        totalGordura = totalGordura.add(comida.getGordura().multiply(quantidadeFinal));
-        totalProteina = totalProteina.add(comida.getProteinas().multiply(quantidadeFinal));
-        totalCarboidrato = totalCarboidrato.add(comida.getCarboidrato().multiply(quantidadeFinal));
-        return new MacroDTO(totalCaloria,totalProteina,totalCarboidrato,totalGordura);
+        return getMacroDTO(totalCaloria, totalProteina, totalCarboidrato, totalGordura, quantidadeFinal, comida.getCalorias(),
+                comida.getGordura(), comida.getProteinas(), comida.getCarboidrato());
 
     }
 
     private MacroDTO calcularReceita(Long receitaId, BigDecimal quantidade){
+
         List<ReceitaItem> itemSistema = itemRepository.findAllByReceitaId(receitaId);
         MacroDTO dto = new MacroDTO(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
         if(!itemSistema.isEmpty()){
@@ -159,19 +222,21 @@ public class ConsumoService {
             }
 
         }
+        if(itemSistema.isEmpty() && itemUsuario.isEmpty()){
+            throw new RuntimeException("Receita vazia");
+        }
         return dto;
     }
 
-        public List<ConsumoItemDTO> listarConsumoDia(){
-        return buscarConsumoDia().stream()
-                .map(this::converterConsumoEmDTO)
-                .toList();
+
+
+        public List<Consumo> listarConsumoDia(){
+        return buscarConsumoDia();
+
         }
 
-        public List<ConsumoItemDTO> listarConsumoPeriodo(LocalDateTime inicio, LocalDateTime fim){
-        return buscarConsumoPorPeriodo(inicio,fim).stream()
-                .map(this::converterConsumoEmDTO)
-                .toList();
+        public List<Consumo> listarConsumoPeriodo(LocalDateTime inicio, LocalDateTime fim){
+        return buscarConsumoPorPeriodo(inicio,fim);
         }
 
 
@@ -184,12 +249,11 @@ public class ConsumoService {
             );
 
             for(Consumo consumo: buscarConsumoDia()){
-                ConsumoItemDTO item = converterConsumoEmDTO(consumo);
 
-                MacroDTO atual = new MacroDTO(item.getCalorias(),
-                        item.getProteinas(),
-                        item.getCarboidrato(),
-                        item.getGordura()
+                MacroDTO atual = new MacroDTO(consumo.getCalorias(),
+                        consumo.getProteinas(),
+                        consumo.getCarboidrato(),
+                        consumo.getGordura()
                         );
 
                 total = MacroDTO.somarDTO(total,atual);
@@ -207,12 +271,12 @@ public class ConsumoService {
         );
 
         for(Consumo consumo: buscarConsumoPorPeriodo(inicio,fim)){
-            ConsumoItemDTO item = converterConsumoEmDTO(consumo);
 
-            MacroDTO atual = new MacroDTO(item.getCalorias(),
-                    item.getProteinas(),
-                    item.getCarboidrato(),
-                    item.getGordura()
+
+            MacroDTO atual = new MacroDTO(consumo.getCalorias(),
+                    consumo.getProteinas(),
+                    consumo.getCarboidrato(),
+                    consumo.getGordura()
             );
 
             total = MacroDTO.somarDTO(total,atual);

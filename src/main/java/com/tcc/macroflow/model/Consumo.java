@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,6 +28,22 @@ public class Consumo {
 
     @Column(nullable = false)
     private LocalDateTime dataHora;
+
+    @Column(nullable = false)
+    private String nome;
+
+    @Column(nullable = false)
+    private BigDecimal quantidade;
+
+
+    @Column(nullable = false)
+    private BigDecimal calorias;
+    @Column(nullable = false)
+    private BigDecimal proteinas;
+    @Column(nullable = false)
+    private BigDecimal carboidrato;
+    @Column(nullable = false)
+    private BigDecimal gordura;
 
 
 

@@ -1,6 +1,7 @@
 package com.tcc.macroflow.controller;
 
 
+import com.tcc.macroflow.dto.ReceitaItemResponseDTO;
 import com.tcc.macroflow.enums.Origem;
 import com.tcc.macroflow.dto.ReceitaItemDTO;
 import com.tcc.macroflow.dto.ReceitaItemRequestDTO;
@@ -23,15 +24,15 @@ public class ReceitaItemController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReceitaItemDTO>> listarItensReceita(@PathVariable Long id){
-        List<ReceitaItemDTO> list = service.listarReceitaItem(id);
+    public ResponseEntity<List<ReceitaItemResponseDTO>> listarItensReceita(@PathVariable Long id){
+        List<ReceitaItemResponseDTO> list = service.listarReceitaItem(id);
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{itemId}")
-    public ResponseEntity<ReceitaItemDTO> listarItensReceita(@PathVariable Long itemId, @RequestParam Origem origem) {
+    public ResponseEntity<ReceitaItemResponseDTO> listarItensReceita(@PathVariable Long itemId, @RequestParam Origem origem) {
 
-        ReceitaItemDTO itemDTO = service.getItem(itemId,origem);
+        ReceitaItemResponseDTO itemDTO = service.getItem(itemId,origem);
         return ResponseEntity.ok(itemDTO);
     }
 
