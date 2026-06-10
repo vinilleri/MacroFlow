@@ -1,7 +1,6 @@
 package com.tcc.macroflow.repository;
 
 
-import com.tcc.macroflow.model.Comida;
 import com.tcc.macroflow.model.ComidaUsuario;
 import com.tcc.macroflow.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +14,5 @@ public interface ComidaUsuarioRepository extends JpaRepository<ComidaUsuario, Lo
     Optional<ComidaUsuario> findByNomeIgnoreCaseAndUsuario(String nome, Usuario usuario);
     List<ComidaUsuario> findAllByUsuarioId(Long usuarioId);
 
+    Optional<ComidaUsuario> findByIdAndUsuarioId(Long id, Long usuarioId);
 }

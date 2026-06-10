@@ -4,6 +4,7 @@ package com.tcc.macroflow.controller;
 import com.tcc.macroflow.dto.ComidaDTO;
 
 import com.tcc.macroflow.dto.ComidaResponseDTO;
+import com.tcc.macroflow.enums.Origem;
 import com.tcc.macroflow.model.Comida;
 
 
@@ -33,6 +34,7 @@ public class ComidaController {
         List<ComidaResponseDTO> lista = comidaService.listarComidaUsuario();
         return ResponseEntity.ok(lista);
     }
+
 
     @GetMapping("/todos")
     public ResponseEntity<List<ComidaResponseDTO>> listarComidasGerais(){
@@ -83,5 +85,16 @@ public class ComidaController {
 
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> buscarComida(@PathVariable Long id, @RequestParam Origem origem){
+
+        try{
+            ComidaResponseDTO response = comidaService.getComida(id,origem);
+
+            return  ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 
 }

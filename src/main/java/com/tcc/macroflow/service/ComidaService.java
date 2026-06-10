@@ -3,6 +3,7 @@ package com.tcc.macroflow.service;
 
 import com.tcc.macroflow.dto.ComidaDTO;
 import com.tcc.macroflow.dto.ComidaResponseDTO;
+import com.tcc.macroflow.enums.Origem;
 import  com.tcc.macroflow.helper.CalcularQuantidade;
 import com.tcc.macroflow.model.Comida;
 import com.tcc.macroflow.model.ComidaUsuario;
@@ -134,6 +135,20 @@ private final UnidadeRepository unidadeRepository;
                 .toList();
     }
 
+    public ComidaResponseDTO getComida(Long id, Origem origem){
+            Usuario usuario = authService.getUsuario();
+
+        if(Origem.USUARIO.equals(origem)){
+            ComidaUsuario response = comidaUsuarioRepository.findByIdAndUsuarioId(id,usuario.getId()).orElseThrow(
+                    () -> new RuntimeException("Comida não encontrada")
+            );
+            return CalcularQuantidade.converterComidaUsuarioEmDto(response);
+        }
+            Comida response = comidaRepository.findById(id).orElseThrow(
+                    () -> new RuntimeException("Comida não encontrada")
+            );
+            return CalcularQuantidade.converterComidaEmDto(response);
+    }
 
 
 }
