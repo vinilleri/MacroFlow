@@ -121,15 +121,31 @@ public class DataLoader implements CommandLineRunner {
             ));
         }
 
-
         if (tipoObjetivoRepository.count() == 0) {
             tipoObjetivoRepository.saveAll(Arrays.asList(
-                    new TipoObjetivo(null, "Emagrecimento", "Foco em perda de gordura com déficit calórico moderado, preservando massa muscular com alta ingestão de proteínas.", BigDecimal.valueOf(0.80), BigDecimal.valueOf(2.0), BigDecimal.valueOf(0.8)),
-                    new TipoObjetivo(null, "Emagrecimento Agressivo", "Déficit calórico elevado para perda de peso mais rápida, exige maior controle e alta ingestão de proteínas.", BigDecimal.valueOf(0.70), BigDecimal.valueOf(2.2), BigDecimal.valueOf(0.7)),
-                    new TipoObjetivo(null, "Manutenção", "Objetivo de manter o peso atual, equilibrando ingestão calórica com gasto energético.", BigDecimal.valueOf(1.00), BigDecimal.valueOf(1.6), BigDecimal.valueOf(1.0)),
-                    new TipoObjetivo(null, "Ganho de Massa Magra", "Superávit calórico leve com foco em gain de massa muscular e mínimo acúmulo de gordura.", BigDecimal.valueOf(1.10), BigDecimal.valueOf(1.8), BigDecimal.valueOf(1.0)),
-                    new TipoObjetivo(null, "Ganho de Massa Agressivo", "Superávit calórico alto visando máximo ganho de peso e massa muscular, com maior risco de acúmulo de gordura.", BigDecimal.valueOf(1.20), BigDecimal.valueOf(1.8), BigDecimal.valueOf(1.2)),
-                    new TipoObjetivo(null, "Recomposição Corporal", "Busca simultânea de perda de gordura e ganho de massa muscular, comum em iniciantes.", BigDecimal.valueOf(0.95), BigDecimal.valueOf(2.0), BigDecimal.valueOf(0.9))
+                    new TipoObjetivo(null, "Emagrecimento",
+                            "Foco em perda de gordura com déficit calórico moderado, preservando massa muscular com alta ingestão de proteínas.",
+                            BigDecimal.valueOf(0.85), BigDecimal.valueOf(1.8), BigDecimal.valueOf(0.8)),
+
+                    new TipoObjetivo(null, "Emagrecimento Agressivo",
+                            "Déficit calórico elevado para perda de peso mais rápida, exige maior controle e alta ingestão de proteínas.",
+                            BigDecimal.valueOf(0.75), BigDecimal.valueOf(2.0), BigDecimal.valueOf(0.75)),
+
+                    new TipoObjetivo(null, "Manutenção",
+                            "Objetivo de manter o peso atual, equilibrando ingestão calórica com gasto energético.",
+                            BigDecimal.valueOf(1.00), BigDecimal.valueOf(1.6), BigDecimal.valueOf(1.0)),
+
+                    new TipoObjetivo(null, "Ganho de Massa Magra",
+                            "Superávit calórico leve com foco em ganho de massa muscular e mínimo acúmulo de gordura.",
+                            BigDecimal.valueOf(1.10), BigDecimal.valueOf(1.7), BigDecimal.valueOf(1.0)),
+
+                    new TipoObjetivo(null, "Ganho de Massa Agressivo",
+                            "Superávit calórico alto visando máximo ganho de peso e massa muscular.",
+                            BigDecimal.valueOf(1.15), BigDecimal.valueOf(1.8), BigDecimal.valueOf(1.1)),
+
+                    new TipoObjetivo(null, "Recomposição Corporal",
+                            "Busca simultânea de perda de gordura e ganho de massa muscular, comum em iniciantes.",
+                            BigDecimal.valueOf(0.95), BigDecimal.valueOf(1.8), BigDecimal.valueOf(0.9))
             ));
         }
     }
