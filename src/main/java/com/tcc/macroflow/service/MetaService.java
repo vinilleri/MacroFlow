@@ -40,9 +40,10 @@ public class MetaService {
     }
 
     private MacroDTO calcularMeta(Usuario usuario, TipoObjetivo objetivo) {
-        MedidasCorporais medidasCorporais = medidasCorporaisRepository.findTopByUsuarioIdOrderByDataDesc(usuario.getId()).orElseThrow(
+        MedidasCorporais medidasCorporais = medidasCorporaisRepository.findTopByUsuarioIdOrderByDataDescIdDesc(usuario.getId()).orElseThrow(
                 () -> new RuntimeException("Usuário sem medidas corporais")
         );
+        BigDecimal valor;
         BigDecimal peso = medidasCorporais.getPeso();
         BigDecimal altura = BigDecimal.valueOf(medidasCorporais.getAltura());
         BigDecimal idade = BigDecimal.valueOf(Period.between(medidasCorporais.getDataNascimento(), LocalDate.now()).getYears());
@@ -57,17 +58,29 @@ public class MetaService {
 
         if (sexo == Sexo.MASCULINO) {
             tmb = tmb.add(BigDecimal.valueOf(5));
+            valor =  BigDecimal.valueOf(50.0);
         } else {
             tmb = tmb.subtract(BigDecimal.valueOf(161));
+            valor =  BigDecimal.valueOf(45.5);
         }
         BigDecimal tdee = tmb.multiply(usuario.getAtividadeFisica()
                 .getFatorMultiplicador());
 
+        BigDecimal subAltura = altura.subtract(BigDecimal.valueOf(152.4));
+
+        BigDecimal divisao = subAltura.divide(BigDecimal.valueOf(2.54),4,RoundingMode.HALF_UP);
+        BigDecimal pesoIdeal = BigDecimal.valueOf(2.3).multiply(divisao).add(valor);
+
+       BigDecimal melhorPeso = peso.min(pesoIdeal);
+
+        if(subAltura.compareTo(BigDecimal.ZERO) <=0){
+            melhorPeso = peso;
+        }
         BigDecimal totalCaloria = tdee.multiply(objetivo.getMultiplicadorCalorico()).setScale(2, RoundingMode.HALF_UP);
 
-        BigDecimal totalProteina = peso.multiply(objetivo.getMultiplicadorProteina()).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal totalProteina = melhorPeso.multiply(objetivo.getMultiplicadorProteina()).setScale(2, RoundingMode.HALF_UP);
 
-        BigDecimal totalGordura = peso.multiply(objetivo.getMultiplicadorGordura()).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal totalGordura = melhorPeso.multiply(objetivo.getMultiplicadorGordura()).setScale(2, RoundingMode.HALF_UP);
 
         BigDecimal caloriasUsadas = totalProteina.multiply(BigDecimal.valueOf(4))
                                         .add(totalGordura.multiply(BigDecimal.valueOf(9)))

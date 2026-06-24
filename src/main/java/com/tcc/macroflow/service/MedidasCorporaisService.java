@@ -104,7 +104,7 @@ public class MedidasCorporaisService {
 
     public MedidaCorporalResponseDTO buscarMedidaAtual(){
         Usuario usuario = authService.getUsuario();
-      MedidasCorporais atual =  repository.findTopByUsuarioIdOrderByDataDesc(usuario.getId()).orElseThrow(
+      MedidasCorporais atual =  repository.findTopByUsuarioIdOrderByDataDescIdDesc(usuario.getId()).orElseThrow(
               () -> new RuntimeException("Medidas Corporais não  foram encontradas")
       );
 
