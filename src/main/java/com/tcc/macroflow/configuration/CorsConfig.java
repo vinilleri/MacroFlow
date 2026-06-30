@@ -19,7 +19,10 @@ import java.util.List;
 
             configuration.setAllowedOrigins(List.of(
                     "http://127.0.0.1:5500",
-                    "http://localhost:5500"
+                    "http://localhost:5500",
+                    "http://137.131.183.148",
+                    "http://macroflow.app.br"
+
             ));
 
             configuration.setAllowedMethods(List.of(
