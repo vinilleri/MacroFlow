@@ -99,7 +99,7 @@ public class EmailService
 """;
         String body = """
         {
-          "from": "onboarding@resend.dev",
+          "from": "MacroFlow <noreply@macroflow.app.br>",
           "to": ["%s"],
           "subject": "Código de Verificação",
           "html": "%s"
