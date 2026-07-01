@@ -4,15 +4,12 @@ import com.tcc.macroflow.model.CodigoEmail;
 import com.tcc.macroflow.model.Usuario;
 import com.tcc.macroflow.repository.EmailRepository;
 import com.tcc.macroflow.repository.UsuarioRepository;
-import jakarta.mail.internet.MimeMessage;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
