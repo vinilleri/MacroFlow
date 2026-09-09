@@ -142,8 +142,5 @@ public class EmailService
     }
     public CodigoEmail buscarUltimo(Long usuarioId){
         return emailRepository.findTopByUsuarioIdOrderByDataCriacaoDesc(usuarioId).orElse(null);
-
-
-
     }
 }

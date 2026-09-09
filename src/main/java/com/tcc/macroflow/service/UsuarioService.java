@@ -1,12 +1,12 @@
 package com.tcc.macroflow.service;
 
 
+import com.tcc.macroflow.dto.CompletudeDTO;
 import com.tcc.macroflow.dto.UsuarioDTO;
 import com.tcc.macroflow.helper.ValidarSenha;
 import com.tcc.macroflow.model.AtividadeFisica;
 import com.tcc.macroflow.model.Usuario;
-import com.tcc.macroflow.repository.AtividadeFisicaRepository;
-import com.tcc.macroflow.repository.UsuarioRepository;
+import com.tcc.macroflow.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,13 +18,19 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final AtividadeFisicaRepository atividadeFisicaRepository;
+    private final ObjetivoRepository objetivoRepository;
+    private final MedidasCorporaisRepository medidasCorporaisRepository;
+    private final MetaRepository metaRepository;
     private  final AuthService authService;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, AtividadeFisicaRepository atividadeFisicaRepository, AuthService authService) {
+    public UsuarioService(UsuarioRepository usuarioRepository, AtividadeFisicaRepository atividadeFisicaRepository, ObjetivoRepository objetivoRepository, MedidasCorporaisRepository medidasCorporaisRepository, MetaRepository metaRepository, AuthService authService) {
         this.usuarioRepository = usuarioRepository;
         this.atividadeFisicaRepository = atividadeFisicaRepository;
+        this.objetivoRepository = objetivoRepository;
+        this.medidasCorporaisRepository = medidasCorporaisRepository;
+        this.metaRepository = metaRepository;
         this.authService = authService;
     }
 
@@ -110,6 +116,14 @@ public class UsuarioService {
         usuarioRepository.delete(usuario);
     }
 
+    public CompletudeDTO verificarCompletudeUsuario(){
+     Usuario usuario = authService.getUsuario();
+
+     return new CompletudeDTO(objetivoRepository.existsByUsuarioId(usuario.getId()),
+             medidasCorporaisRepository.existsByUsuarioId(usuario.getId()),
+             metaRepository.existsByUsuarioId(usuario.getId())
+     );
+    }
 
     public boolean verificarLogin(String email, String senha) {
 

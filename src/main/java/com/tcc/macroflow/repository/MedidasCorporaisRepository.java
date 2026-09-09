@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface MedidasCorporaisRepository  extends JpaRepository<MedidasCorporais,Long> {
     List<MedidasCorporais> findAllByUsuarioIdAndDataBetween(Long id, LocalDate inicio, LocalDate fim);
     Optional<MedidasCorporais> findTopByUsuarioIdOrderByDataDescIdDesc(Long id);
+
+    boolean existsByUsuarioId(Long id);
 }

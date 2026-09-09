@@ -1,6 +1,7 @@
 package com.tcc.macroflow.controller;
 
 
+import com.tcc.macroflow.dto.CompletudeDTO;
 import com.tcc.macroflow.dto.EmailDTO;
 import com.tcc.macroflow.dto.LogarDTO;
 import com.tcc.macroflow.dto.UsuarioDTO;
@@ -81,9 +82,9 @@ private final TokenService tokenService;
     public ResponseEntity<?> verificarLogin(@RequestBody LogarDTO logarDTO) throws Exception {
         if(usuarioService.verificarLogin(logarDTO.getEmail(),logarDTO.getSenha())){
             Usuario usuario = usuarioService.buscarPorEmail(logarDTO.getEmail());
-            CodigoEmail ultimoCodigoEmail = emailService.buscarUltimo(usuario.getId());
-            if(ultimoCodigoEmail != null && ultimoCodigoEmail.getDataCriacao().plusSeconds(10).isAfter(LocalDateTime.now())){
-                throw new RuntimeException("Aguarde 10 segundos para solicitar outro código");
+          CodigoEmail ultimoCodigoEmail = emailService.buscarUltimo(usuario.getId());
+           if(ultimoCodigoEmail != null && ultimoCodigoEmail.getDataCriacao().plusSeconds(10).isAfter(LocalDateTime.now())){
+               throw new RuntimeException("Aguarde 10 segundos para solicitar outro código");
             }
 
                 CodigoEmail codigoEmail = emailService.gerarCodigo(usuario);
@@ -95,6 +96,13 @@ private final TokenService tokenService;
                 }
             }
         return ResponseEntity.status(401).body("Credenciais inválidas");
+    }
+
+    @GetMapping("/completude")
+    public  ResponseEntity<?> completudeUsuario(){
+      CompletudeDTO completude =usuarioService.verificarCompletudeUsuario();
+
+      return ResponseEntity.ok(completude);
     }
 
     @PostMapping("/login/confirmar")

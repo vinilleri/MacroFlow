@@ -66,10 +66,10 @@ public class AssistenteVirtualService {
         ObjetivoResponseDTO objetivoAtual = objetivoService.objetivoAtual();
 
         return """
-                Você é um assistente virtual de um site de acompanhamento nutricional. Responda as perguntas de forma curta e amigável.
+                Você é um assistente virtual de um site de acompanhamento nutricional. Responda as perguntas de forma bem resumida e amigável.
                 Se o usuário fizer perguntas que não sejam relacionadas a nutrição,
                 alimentação, hábitos saudáveis ou ao sistema, responda educadamente
-                que seu foco é auxiliar no acompanhamento nutricional.
+                que seu foco é auxiliar no acompanhamento nutricional. NÃO USE NEGRITO
                 
                     Dados do usuário:
                         Nome: %s
@@ -121,7 +121,7 @@ public class AssistenteVirtualService {
         String prompt = montarPrompt(usuario,pergunta);
 
         Map<String, Object> body = Map.of(
-                "model", "llama-3.1-8b-instant",
+                "model", "openai/gpt-oss-20b",
                 "messages", List.of(
                         Map.of(
                                 "role", "user",
