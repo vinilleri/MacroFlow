@@ -1,11 +1,9 @@
 package com.tcc.macroflow.controller;
 
 
-import com.tcc.macroflow.dto.CompletudeDTO;
-import com.tcc.macroflow.dto.EmailDTO;
-import com.tcc.macroflow.dto.LogarDTO;
-import com.tcc.macroflow.dto.UsuarioDTO;
+import com.tcc.macroflow.dto.*;
 import com.tcc.macroflow.model.CodigoEmail;
+import com.tcc.macroflow.model.TokenRecuperacao;
 import com.tcc.macroflow.model.Usuario;
 import com.tcc.macroflow.service.EmailService;
 import com.tcc.macroflow.service.TokenService;
@@ -97,6 +95,23 @@ private final TokenService tokenService;
             }
         return ResponseEntity.status(401).body("Credenciais inválidas");
     }
+    @PostMapping("/recuperacao")
+    public ResponseEntity<?> enviarEmailRecuperacao(@RequestBody String email) throws Exception {
+
+        TokenRecuperacao tokenRecuperacao = emailService.gerarToken(email);
+        if (tokenRecuperacao != null) {
+            emailService.enviarURL(email, tokenRecuperacao);
+            return ResponseEntity.ok( "A url foi enviada");
+        }
+        return ResponseEntity.status(401).body("Email não encontrado");
+    }
+
+    @PatchMapping("/recuperacao/alterarSenha")
+    public ResponseEntity<?> alterarSenha( @RequestBody RecuperacaoDTO recuperacaoDTO) throws Exception {
+        emailService.alterarSenha(recuperacaoDTO.getCodigo(), recuperacaoDTO.getSenha());
+        return ResponseEntity.ok("Senha alterada");
+    }
+
 
     @GetMapping("/completude")
     public  ResponseEntity<?> completudeUsuario(){

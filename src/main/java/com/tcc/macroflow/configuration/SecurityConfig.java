@@ -33,6 +33,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
                             .requestMatchers(HttpMethod.GET, "/api/atividade-fisica").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/usuario/login").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/usuario/login/confirmar/**").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/api/usuario/recuperacao").permitAll()
+                            .requestMatchers(HttpMethod.PATCH, "/api/usuario/recuperacao/alterarSenha").permitAll()
                             .requestMatchers("/v3/api-docs/**").permitAll()
                             .requestMatchers("/swagger-ui/**").permitAll()
                             .requestMatchers("/swagger-ui.html").permitAll()

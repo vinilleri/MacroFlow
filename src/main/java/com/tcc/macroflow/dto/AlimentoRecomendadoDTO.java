@@ -1,5 +1,6 @@
 package com.tcc.macroflow.dto;
 
+import com.tcc.macroflow.enums.Origem;
 import com.tcc.macroflow.enums.TipoComidaReceita;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,5 +20,6 @@ public class AlimentoRecomendadoDTO {
     BigDecimal proteinas;
     BigDecimal carboidrato;
     BigDecimal gordura;
+    BigDecimal score;
 
 }

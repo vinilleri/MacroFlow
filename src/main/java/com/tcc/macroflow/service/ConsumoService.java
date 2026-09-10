@@ -230,9 +230,6 @@ public class ConsumoService {
             }
 
         }
-        if(itemSistema.isEmpty() && itemUsuario.isEmpty()){
-            throw new RuntimeException("Receita vazia");
-        }
         return dto;
     }
 
