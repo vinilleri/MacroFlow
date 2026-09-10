@@ -212,7 +212,7 @@ public class ConsumoService {
 
     }
 
-    private MacroDTO calcularReceita(Long receitaId, BigDecimal quantidade){
+    public MacroDTO calcularReceita(Long receitaId, BigDecimal quantidade){
 
         List<ReceitaItem> itemSistema = itemRepository.findAllByReceitaId(receitaId);
         MacroDTO dto = new MacroDTO(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
