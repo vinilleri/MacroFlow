@@ -14,11 +14,11 @@
 
 ## Sobre o projeto
 
-O **MacroFlow** é uma aplicação web de acompanhamento nutricional desenvolvida como projeto de **Trabalho de Conclusão de Curso (TCC)**.
+O **MacroFlow** é uma aplicação web de acompanhamento nutricional desenvolvida como projeto de **Trabalho de Conclusão de Curso (TCC)** no curso técnico de Desenvolvimento de Sistemas.
 
-A plataforma foi desenvolvida com o objetivo de centralizar informações relacionadas à alimentação, composição corporal e metas nutricionais em uma única aplicação.
+A plataforma foi desenvolvida com o objetivo de centralizar informações relacionadas à alimentação, composição corporal, objetivos e metas nutricionais em uma única aplicação.
 
-Em vez de tratar alimentação apenas como um registro de refeições, o MacroFlow busca relacionar diferentes informações do usuário para auxiliar no acompanhamento de sua evolução e na tomada de decisões relacionadas à sua rotina alimentar.
+Em vez de tratar a alimentação apenas como um registro de refeições, o MacroFlow busca relacionar diferentes informações do usuário para auxiliar no acompanhamento de sua evolução e na tomada de decisões relacionadas à sua rotina alimentar.
 
 Entre os principais recursos estão:
 
@@ -30,19 +30,21 @@ Entre os principais recursos estão:
 * evolução do peso;
 * criação e gerenciamento de receitas;
 * recomendações personalizadas;
-* assistente virtual baseado em IA;
+* assistente virtual baseado em inteligência artificial;
+* recuperação de conhecimento por RAG;
+* execução de operações através de Tool Calling;
 * autenticação e controle de acesso;
-* recuperação e verificação de conta por e-mail.
+* verificação e recuperação de conta por e-mail.
 
 ---
 
 ## Objetivo
 
-O projeto surgiu a partir de um problema comum em aplicações de acompanhamento nutricional: a fragmentação das informações.
+O projeto surgiu a partir de um problema comum em aplicações de acompanhamento nutricional: a **fragmentação das informações**.
 
-Dados como **alimentação, metas, peso, medidas corporais e objetivos** normalmente são registrados separadamente, dificultando uma visão geral da evolução do usuário.
+Dados como alimentação, metas, peso, medidas corporais e objetivos normalmente são registrados separadamente, dificultando uma visão integrada da evolução do usuário.
 
-O MacroFlow procura integrar essas informações em uma única plataforma, permitindo que os dados registrados pelo usuário sejam utilizados não apenas para armazenamento, mas também como base para análises, recomendações e assistência personalizada.
+O MacroFlow procura integrar essas informações em uma única plataforma, permitindo que os dados registrados sejam utilizados não apenas para armazenamento, mas também como base para análises, recomendações e assistência personalizada.
 
 > **Registrar. Acompanhar. Entender. Evoluir.**
 
@@ -77,7 +79,9 @@ O MacroFlow permite definir metas diárias de:
 * carboidratos;
 * gorduras.
 
-Os dados consumidos podem então ser comparados com as metas estabelecidas, permitindo acompanhar o progresso nutricional ao longo do dia.
+Os dados consumidos podem ser comparados com as metas estabelecidas, permitindo acompanhar o progresso nutricional ao longo do dia.
+
+O sistema também diferencia metas **calculadas** de metas **manuais**, permitindo que os valores sejam definidos de acordo com as regras nutricionais implementadas ou personalizados pelo usuário.
 
 ---
 
@@ -89,7 +93,7 @@ O usuário pode definir seu objetivo dentro da aplicação, como:
 * ganho de massa;
 * manutenção.
 
-O objetivo é utilizado como parte das informações que orientam o acompanhamento do usuário.
+O objetivo é utilizado como parte das informações que orientam o acompanhamento nutricional e a definição das metas.
 
 ---
 
@@ -120,43 +124,208 @@ Isso possibilita tratar uma preparação completa como uma unidade de consumo, a
 
 ### Recomendações
 
-O sistema possui um mecanismo de recomendação responsável por analisar características dos alimentos e atribuir uma **pontuação de relevância** de acordo com o contexto do usuário.
+O sistema possui uma camada dedicada à geração de recomendações nutricionais.
 
-A arquitetura de recomendação foi desenvolvida de forma separada da camada de apresentação, permitindo evoluir posteriormente os critérios utilizados pelo sistema.
+A lógica analisa os dados de consumo e a meta atual do usuário para identificar quais nutrientes ainda precisam ser atingidos e atribuir uma **pontuação de relevância** aos alimentos disponíveis.
 
----
+Os alimentos podem então ser classificados de acordo com o quanto contribuem para o preenchimento das necessidades restantes, utilizando diferentes pesos para calorias, proteínas, carboidratos e gorduras.
 
-### Assistente virtual
-
-O MacroFlow possui um assistente virtual integrado à aplicação.
-
-A funcionalidade utiliza informações relacionadas ao usuário para fornecer respostas contextualizadas sobre sua rotina dentro do sistema.
-
-As interações com o assistente são armazenadas, permitindo manter o histórico da conversa.
-
-A arquitetura foi projetada para permitir a evolução futura do mecanismo de inteligência artificial sem acoplar a lógica de IA diretamente às demais funcionalidades do sistema.
+A arquitetura foi desenvolvida de forma independente da camada de apresentação, permitindo a evolução dos critérios de recomendação sem modificar a estrutura principal da aplicação.
 
 ---
 
-### Autenticação e segurança
+## Inteligência artificial
 
-O backend utiliza **Spring Security** para controle de acesso e autenticação.
+O MacroFlow possui um assistente virtual chamado **Magali**, integrado diretamente ao backend da aplicação.
 
-A autenticação utiliza **JSON Web Tokens (JWT)** para identificar usuários nas requisições autenticadas.
+A proposta não é utilizar a IA apenas como uma interface de conversação, mas integrá-la ao ecossistema do sistema para que ela possa utilizar conhecimento relacionado ao domínio e interagir com funcionalidades reais do MacroFlow.
 
-Também existem mecanismos relacionados a:
+A arquitetura utiliza **Spring AI** para realizar a integração com o modelo de linguagem e combina diferentes mecanismos:
 
-* criação de conta;
-* login;
-* verificação de e-mail;
-* recuperação de senha;
-* tokens de recuperação;
-* proteção de endpoints;
-* controle de acesso aos dados do usuário.
+* **LLM (Large Language Model)** para interpretação e geração de respostas;
+* **RAG (Retrieval-Augmented Generation)** para recuperação de conhecimento;
+* **Tool Calling** para execução de operações reais;
+* **memória conversacional** para manutenção de contexto;
+* **PGVector** para armazenamento e busca vetorial;
+* **embeddings** para representação semântica dos documentos.
 
 ---
 
-## Arquitetura
+### Arquitetura da IA
+
+O fluxo simplificado da arquitetura é:
+
+```text
+                         ┌─────────────────────┐
+                         │       Usuário       │
+                         └──────────┬──────────┘
+                                    │
+                                    ▼
+                         ┌─────────────────────┐
+                         │      Magali         │
+                         │   Assistente IA     │
+                         └──────────┬──────────┘
+                                    │
+                    ┌───────────────┼───────────────┐
+                    │               │               │
+                    ▼               ▼               ▼
+              Chat Memory          RAG        Tool Calling
+                    │               │               │
+                    ▼               ▼               ▼
+               Contexto       PGVector          Tools
+              conversacional      │               │
+                                  ▼               ▼
+                             Conhecimento      Services
+                                               do MacroFlow
+                                                    │
+                                                    ▼
+                                               PostgreSQL
+```
+
+A IA, portanto, pode atuar tanto como uma interface de consulta quanto como uma camada capaz de interagir com funcionalidades existentes no backend.
+
+---
+
+### RAG
+
+O MacroFlow utiliza **Retrieval-Augmented Generation (RAG)** para fornecer ao modelo informações específicas sobre o domínio da aplicação.
+
+Documentos contendo conhecimentos nutricionais e regras de funcionamento do MacroFlow são processados e divididos em partes menores.
+
+O fluxo de ingestão é:
+
+```text
+Arquivos Markdown
+       │
+       ▼
+    Documents
+       │
+       ▼
+      Chunks
+       │
+       ▼
+    Embeddings
+       │
+       ▼
+     PGVector
+```
+
+Quando uma pergunta é realizada, ela também é transformada em uma representação vetorial. O sistema então realiza uma busca por similaridade para recuperar os documentos mais relevantes.
+
+```text
+Pergunta
+   │
+   ▼
+Embedding da pergunta
+   │
+   ▼
+Busca por similaridade
+   │
+   ▼
+Documentos relevantes
+   │
+   ▼
+Contexto
+   │
+   ▼
+Modelo de linguagem
+   │
+   ▼
+Resposta
+```
+
+O armazenamento vetorial utiliza **PostgreSQL com PGVector**, enquanto os embeddings são gerados localmente através do **Ollama**.
+
+---
+
+### Tool Calling
+
+O assistente possui ferramentas que permitem consultar e executar operações reais no sistema.
+
+Entre as ferramentas disponíveis estão recursos relacionados a:
+
+* consumo alimentar;
+* metas nutricionais;
+* alimentos;
+* receitas;
+* medidas corporais.
+
+A arquitetura segue o fluxo:
+
+```text
+Usuário
+   │
+   ▼
+Modelo de linguagem
+   │
+   ▼
+Identificação da ferramenta
+   │
+   ▼
+Tool
+   │
+   ▼
+Service
+   │
+   ▼
+Repository
+   │
+   ▼
+PostgreSQL
+```
+
+Isso permite que uma solicitação feita em linguagem natural seja transformada em operações reais da aplicação.
+
+Por exemplo:
+
+```text
+"Cadastre feijão preto, linguiça e arroz."
+
+                │
+                ▼
+
+          Modelo de IA
+                │
+                ▼
+
+          Tool Calling
+                │
+       ┌────────┼────────┐
+       ▼        ▼        ▼
+    Comida    Comida   Comida
+       │        │        │
+       └────────┼────────┘
+                ▼
+            PostgreSQL
+```
+
+Uma única solicitação pode resultar em múltiplas chamadas de ferramentas, dependendo da tarefa solicitada pelo usuário.
+
+As ferramentas também utilizam os Services existentes no backend, evitando duplicar regras de negócio dentro da camada de inteligência artificial.
+
+---
+
+### Memória conversacional
+
+O assistente utiliza memória conversacional para manter o contexto das interações recentes.
+
+A memória utilizada pelo modelo é diferente do histórico permanente de conversas armazenado pela aplicação.
+
+```text
+ChatMemory
+   │
+   └── Contexto utilizado pelo modelo
+
+AssistenteVirtual
+   │
+   └── Histórico permanente da aplicação
+```
+
+Essa separação permite que o sistema mantenha o histórico completo para o usuário sem depender dele integralmente como contexto enviado ao modelo.
+
+---
+
+## Arquitetura do backend
 
 O backend segue uma arquitetura organizada em camadas, buscando separar responsabilidades e reduzir o acoplamento entre as diferentes partes da aplicação.
 
@@ -192,7 +361,9 @@ O backend segue uma arquitetura organizada em camadas, buscando separar responsa
                          └──────────────────────┘
 ```
 
-### Organização do backend
+---
+
+## Organização do backend
 
 ```text
 src/main/java/com/tcc/macroflow
@@ -224,34 +395,28 @@ src/main/java/com/tcc/macroflow
 ├── helper/
 │
 ├── model/
-│   ├── Usuario
-│   ├── Comida
-│   ├── ComidaUsuario
-│   ├── Consumo
-│   ├── Receita
-│   ├── ReceitaItem
-│   ├── ReceitaItemUsuario
-│   ├── Meta
-│   ├── Objetivo
-│   ├── MedidasCorporais
-│   ├── AtividadeFisica
-│   ├── AssistenteVirtual
-│   └── ...
 │
 ├── repository/
 │
-└── service/
-    ├── AuthService
-    ├── UsuarioService
-    ├── ComidaService
-    ├── ConsumoService
-    ├── ReceitaService
-    ├── RecomendacaoService
-    ├── AssistenteVirtualService
-    └── ...
+├── service/
+│
+└── ia/
+    ├── service/
+    │   ├── MacroFlowIaService
+    │   └── KnowledgeIngestionService
+    │
+    ├── tools/
+    │   ├── ConsumoTools
+    │   ├── MetaTools
+    │   ├── ComidaTools
+    │   ├── ReceitaTools
+    │   └── MedidasCorporaisTools
+    │
+    └── configuration/
+        └── MacroflowIaConfig
 ```
 
-A estrutura atual do projeto contém essas camadas e separa explicitamente controllers, serviços, modelos, DTOs, repositories e configurações.
+A camada `ia` concentra os componentes específicos de inteligência artificial, enquanto as regras de negócio continuam sendo executadas pelos Services tradicionais da aplicação.
 
 ---
 
@@ -265,7 +430,7 @@ A estrutura atual do projeto contém essas camadas e separa explicitamente contr
 | **Spring Boot 4.0.5** | Framework principal                   |
 | **Spring Web MVC**    | API REST                              |
 | **Spring Data JPA**   | Persistência e ORM                    |
-| **PostgreSQL**        | Banco de dados                        |
+| **PostgreSQL**        | Banco de dados relacional             |
 | **Spring Security**   | Autenticação e autorização            |
 | **JWT**               | Autenticação baseada em tokens        |
 | **Lombok**            | Redução de código repetitivo          |
@@ -273,7 +438,17 @@ A estrutura atual do projeto contém essas camadas e separa explicitamente contr
 | **Springdoc OpenAPI** | Documentação da API                   |
 | **Maven**             | Gerenciamento de dependências e build |
 
-Essas dependências estão declaradas no `pom.xml` atual do projeto.
+### Inteligência artificial
+
+| Tecnologia           | Utilização                                           |
+| -------------------- | ---------------------------------------------------- |
+| **Spring AI**        | Integração com modelos de linguagem e recursos de IA |
+| **Groq**             | Inferência do modelo de linguagem                    |
+| **Ollama**           | Execução local para geração de embeddings            |
+| **nomic-embed-text** | Modelo utilizado para embeddings                     |
+| **PGVector**         | Armazenamento e busca vetorial                       |
+| **RAG**              | Recuperação de conhecimento contextual               |
+| **Tool Calling**     | Execução de operações através da IA                  |
 
 ### Frontend
 
@@ -281,13 +456,13 @@ O frontend é mantido em um repositório separado:
 
 **[MacroFlow Frontend](https://github.com/vinilleri/macroflow-frontend)**
 
-A separação entre frontend e backend permite que a API REST seja desenvolvida e evoluída independentemente da camada de apresentação.
+A separação permite que a API REST e a camada de apresentação sejam desenvolvidas e evoluídas de forma independente.
 
 ---
 
 ## API REST
 
-O backend disponibiliza uma API REST responsável por intermediar a comunicação entre a interface e os dados da aplicação.
+O backend disponibiliza uma API REST responsável por intermediar a comunicação entre a interface, as regras de negócio e os dados da aplicação.
 
 Alguns dos principais recursos expostos pela API incluem:
 
@@ -311,9 +486,35 @@ A documentação da API utiliza **OpenAPI/Swagger**, permitindo visualizar e tes
 
 ---
 
+## Exemplo de utilização da API
+
+### Criar uma comida
+
+```http
+POST /comida
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+```json
+{
+  "nome": "Banana",
+  "calorias": 89,
+  "proteinas": 1.1,
+  "carboidrato": 22.8,
+  "gordura": 0.3,
+  "unidadeId": 1,
+  "valor": 100
+}
+```
+
+A API valida os dados recebidos antes de realizar a persistência.
+
+---
+
 ## Segurança
 
-A aplicação utiliza autenticação baseada em JWT.
+A aplicação utiliza autenticação baseada em **JSON Web Tokens (JWT)**.
 
 O fluxo simplificado é:
 
@@ -336,13 +537,23 @@ AuthService
            │
            │ Authorization: Bearer <token>
            ▼
-     API protegida
+      API protegida
            │
            ▼
-   Spring Security
+     Spring Security
 ```
 
 O token é utilizado para identificar o usuário autenticado e restringir o acesso aos dados pertencentes à sua conta.
+
+Também existem mecanismos relacionados a:
+
+* criação de conta;
+* login;
+* verificação de e-mail;
+* recuperação de senha;
+* tokens de recuperação;
+* proteção de endpoints;
+* controle de acesso aos dados do usuário.
 
 > **Importante:** chaves JWT, credenciais de banco de dados, senhas de serviços externos e outras informações sensíveis devem ser configuradas por variáveis de ambiente ou arquivos locais que não sejam versionados.
 
@@ -390,13 +601,15 @@ Para executar o backend localmente, recomenda-se ter instalado:
 
 O projeto também possui Maven Wrapper, permitindo executar o Maven sem uma instalação global.
 
+Para utilizar os recursos de inteligência artificial, também são necessárias as configurações correspondentes ao provedor do modelo e ao ambiente de embeddings.
+
 ---
 
 ## Configuração
 
 Antes de executar o projeto, configure as informações necessárias para conexão com o banco de dados e os serviços externos.
 
-Exemplo de configuração:
+Exemplo:
 
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/macroflow
@@ -406,9 +619,9 @@ spring.datasource.password=${DB_PASSWORD}
 api.security.token.secret=${JWT_SECRET}
 ```
 
-> Os valores reais não devem ser publicados no repositório.
+As credenciais utilizadas pelo provedor de IA e demais serviços externos também devem ser configuradas por variáveis de ambiente.
 
-Dependendo da configuração utilizada, também podem ser necessárias credenciais relacionadas ao serviço de e-mail e ao provedor utilizado pelo assistente virtual.
+> Os valores reais não devem ser publicados no repositório.
 
 ---
 
@@ -459,39 +672,6 @@ A documentação é gerada utilizando **Springdoc OpenAPI**.
 
 ---
 
-## Estrutura do projeto
-
-O repositório principal contém:
-
-```text
-MacroFlow/
-│
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── com/tcc/macroflow/
-│   │   │       ├── component/
-│   │   │       ├── configuration/
-│   │   │       ├── controller/
-│   │   │       ├── dto/
-│   │   │       ├── enums/
-│   │   │       ├── helper/
-│   │   │       ├── model/
-│   │   │       ├── repository/
-│   │   │       └── service/
-│   │   │
-│   │   └── resources/
-│   │
-│   └── test/
-│
-├── Dockerfile
-├── pom.xml
-├── mvnw
-└── mvnw.cmd
-```
-
----
-
 ## Frontend
 
 O frontend do MacroFlow possui um repositório independente:
@@ -539,47 +719,34 @@ A API utiliza DTOs para controlar os dados que entram e saem dos endpoints, evit
 
 O acesso ao banco de dados é abstraído através da camada de repositories utilizando Spring Data JPA.
 
+### Inteligência artificial
+
+A camada de IA foi isolada em um pacote próprio, permitindo integrar RAG, memória e Tool Calling sem misturar essas responsabilidades com os controllers e serviços tradicionais.
+
+As Tools da IA reutilizam os Services existentes sempre que uma operação precisa ser executada, mantendo as regras de negócio centralizadas.
+
 ### Segurança
 
 A autenticação é mantida separada da lógica principal da aplicação através da configuração do Spring Security e dos serviços responsáveis por autenticação e tokens.
 
 ---
 
-## Inteligência artificial
+## Demonstração
 
-Uma das áreas de evolução do MacroFlow é a utilização de inteligência artificial para transformar os dados registrados pelo usuário em informações mais úteis.
+O MacroFlow possui uma interface web própria para interação com as funcionalidades da aplicação.
 
-A IA pode utilizar o contexto nutricional e os dados cadastrados na aplicação para fornecer respostas mais relevantes do que um chatbot genérico.
+Algumas das principais áreas do sistema incluem:
 
-A intenção é que o assistente faça parte do ecossistema do MacroFlow, e não seja apenas uma interface para conversar com um modelo de linguagem.
+* dashboard nutricional;
+* registro de consumo;
+* alimentos;
+* receitas;
+* metas;
+* acompanhamento corporal;
+* recomendações;
+* assistente virtual.
 
----
-
-## Sistema de recomendações
-
-O MacroFlow também possui uma camada dedicada à geração de recomendações.
-
-A lógica de recomendação utiliza uma abordagem baseada em **pontuação**, permitindo classificar diferentes alimentos de acordo com critérios definidos pela aplicação.
-
-De forma simplificada:
-
-```text
-Dados do usuário
-       │
-       ▼
-Características dos alimentos
-       │
-       ▼
-Cálculo de pontuação
-       │
-       ▼
-Ordenação dos resultados
-       │
-       ▼
-Alimentos recomendados
-```
-
-Essa arquitetura permite adicionar novos critérios futuramente sem alterar a estrutura principal da API.
+> Screenshots e demonstrações visuais podem ser adicionados posteriormente em `docs/images`.
 
 ---
 
@@ -587,7 +754,7 @@ Essa arquitetura permite adicionar novos critérios futuramente sem alterar a es
 
 **Em desenvolvimento.**
 
-O MacroFlow está sendo desenvolvido como um projeto acadêmico de TCC, mas sua arquitetura foi construída utilizando tecnologias e padrões comuns no desenvolvimento de aplicações web modernas.
+O MacroFlow está sendo desenvolvido como um projeto acadêmico de TCC, utilizando tecnologias e padrões comuns no desenvolvimento de aplicações web modernas.
 
 Atualmente, o projeto concentra seus esforços principalmente em:
 
@@ -630,7 +797,9 @@ O projeto reúne conhecimentos de:
 * modelagem de sistemas;
 * desenvolvimento orientado a objetos;
 * inteligência artificial;
-* algoritmos e sistemas de recomendação.
+* recuperação de informação;
+* algoritmos;
+* sistemas de recomendação.
 
 ---
 
