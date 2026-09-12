@@ -3,7 +3,6 @@ package com.tcc.macroflow.controller;
 
 import com.tcc.macroflow.dto.AssistenteDTO;
 import com.tcc.macroflow.dto.PerguntaDTO;
-import com.tcc.macroflow.ia.service.EmbeddingService;
 import com.tcc.macroflow.service.AssistenteVirtualService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +15,8 @@ import java.util.List;
 @CrossOrigin("*")
 public class AssistenteVirtualController {
     private final AssistenteVirtualService assistenteVirtualService;
-    private final EmbeddingService embeddingService;
-    public AssistenteVirtualController(AssistenteVirtualService assistenteVirtualService, EmbeddingService embeddingService) {
+    public AssistenteVirtualController(AssistenteVirtualService assistenteVirtualService) {
         this.assistenteVirtualService = assistenteVirtualService;
-        this.embeddingService = embeddingService;
     }
 
     @PostMapping
@@ -28,11 +25,6 @@ public class AssistenteVirtualController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/teste")
-    public ResponseEntity<?> teste(){
-        embeddingService.adicionarConheciomento();
-        return  ResponseEntity.ok().build();
-    }
 
     @GetMapping
     public  ResponseEntity<?> conversaAtual(){

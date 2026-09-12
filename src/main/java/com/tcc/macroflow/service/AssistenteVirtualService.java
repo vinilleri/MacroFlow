@@ -30,7 +30,6 @@ public class AssistenteVirtualService {
         return new AssistenteDTO(virtual.getMensagemUsuario(), virtual.getMensagemIa() );
     }
 
-
     @Transactional
     public String enviarMensagem(String pergunta){
         Usuario usuario = authService.getUsuario();

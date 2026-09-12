@@ -10,9 +10,7 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MetaDTO {
-
-    private Long objetivoId;
+public class MetaRequisicaoDTO {
     private TipoMeta tipoMeta;
     private BigDecimal calorias;
     private BigDecimal proteinas;

@@ -6,10 +6,7 @@ import com.tcc.macroflow.service.AuthService;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.stereotype.Service;
-import org.springframework.ai.document.Document;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 
@@ -21,9 +18,8 @@ public class MacroFlowIaService {
     private final ComidaTools comidaTools;
     private final ReceitaTools receitaTools;
     private final MedidasCorporaisTools medidasCorporaisTools;
-    private final EmbeddingService embeddingService;
     public MacroFlowIaService(ChatClient chatClient, ConsumoTools consumoTools, MetaTools metaTools,
-                              AuthService authService, ComidaTools comidaTools, ReceitaTools receitaTools, MedidasCorporaisTools medidasCorporaisTools, EmbeddingService embeddingService){
+                              AuthService authService, ComidaTools comidaTools, ReceitaTools receitaTools, MedidasCorporaisTools medidasCorporaisTools){
         this.chatClient = chatClient;
         this.consumoTools = consumoTools;
         this.metaTools = metaTools;
@@ -31,19 +27,11 @@ public class MacroFlowIaService {
         this.comidaTools = comidaTools;
         this.receitaTools = receitaTools;
         this.medidasCorporaisTools = medidasCorporaisTools;
-        this.embeddingService = embeddingService;
     }
 
     public String responder(String pergunta) {
         Usuario usuario = authService.getUsuario();
-        List<Document> documentos = embeddingService.buscar(pergunta);
 
-        String contexto = documentos.stream()
-                .map(Document::getText)
-                .collect(Collectors.joining("\n"));
-        if (contexto.isBlank()) {
-            contexto = "Nenhum conhecimento específico do MacroFlow foi encontrado.";
-        }
         return chatClient
                 .prompt()
                 .tools(consumoTools)
@@ -56,7 +44,7 @@ public class MacroFlowIaService {
                         usuario.getId().toString()
                 ))
                 .system("""
-                        Você é o assistente virtual do MacroFlow, um sistema de acompanhamento nutricional.
+                        Seu nome é Magali. Você é a assistente virtual do MacroFlow, um sistema de acompanhamento nutricional.
                         
                         Seu objetivo é conversar com o usuário de forma natural, direta e humana.
                         
@@ -65,7 +53,7 @@ public class MacroFlowIaService {
                         Converse como uma pessoa inteligente conversando normalmente com outra pessoa.
                         
                         Não escreva como um artigo, postagem de blog, propaganda, matéria jornalística ou texto de nutricionista de Instagram.
-                        
+                        Nunca utilize tabelas nas respostas. Mesmo quando houver vários valores para comparar, escreva as informações em texto corrido. Não transforme automaticamente dados em tabelas, listas ou estruturas organizadas. Só utilize uma lista quando ela for indispensável para compreensão.
                         Evite introduções genéricas como:
                         
                         * "Claro! Aqui vão algumas opções..."
@@ -132,8 +120,9 @@ public class MacroFlowIaService {
                         Perguntas fora desses assuntos devem ser recusadas de maneira breve e natural.
                         
                         Não prescreva tratamentos ou dietas médicas e não substitua orientação profissional.
-                        %s
-                        """.formatted(contexto))
+                    
+                    
+                        """)
                 .user(pergunta)
                 .call()
                 .content();

@@ -148,6 +148,7 @@ public class MetaService {
         return meta;
     }
 
+    @Transactional
     public MetaResponseDTO criarMeta(MetaDTO dto){
         Usuario usuario = service.getUsuario();
         Optional<Meta> metaAnterior = metaRepository.findByUsuarioIdAndAtiva(usuario.getId(),true);
