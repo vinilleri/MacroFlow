@@ -126,6 +126,18 @@ private final UnidadeRepository unidadeRepository;
         return listaTotal;
 
     }
+
+    public ComidaResponseDTO buscarComidaNome(String nome){
+        List<ComidaResponseDTO> listarComidas = listarComidas();
+
+        for(ComidaResponseDTO comida: listarComidas){
+            if (comida.getNome().toLowerCase().contains(nome.toLowerCase())) {
+                return comida;
+            }
+        }
+
+        return null;
+    }
     public List<ComidaResponseDTO> listarComidaUsuario(){
         Usuario usuario = authService.getUsuario();
         List<ComidaUsuario> lista = comidaUsuarioRepository.findAllByUsuarioId(usuario.getId());

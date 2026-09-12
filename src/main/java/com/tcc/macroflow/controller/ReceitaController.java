@@ -21,8 +21,8 @@ public class ReceitaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReceitaDTO>> listarReceita(){
-        List<ReceitaDTO> lista = service.listarReceitaUsuario();
+    public ResponseEntity<List<ReceitaResponseDTO>> listarReceita(){
+        List<ReceitaResponseDTO> lista = service.listarReceitaUsuario();
         return ResponseEntity.ok(lista);
     }
 

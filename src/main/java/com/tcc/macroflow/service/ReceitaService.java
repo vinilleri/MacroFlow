@@ -23,9 +23,10 @@ public class ReceitaService {
     private final ComidaUsuarioRepository comidaUsuarioRepository;
     private final ReceitaItemUsuarioRepository receitaItemUsuarioRepository;
     private final AuthService authService;
+    private final ComidaService comidaService;
     public ReceitaService(ReceitaRepository receitaRepository, ReceitaItemRepository itemRepository,
                           ComidaRepository comidaRepository, ComidaUsuarioRepository comidaUsuarioRepository,
-                          ReceitaItemUsuarioRepository receitaItemUsuarioRepository, AuthService authService) {
+                          ReceitaItemUsuarioRepository receitaItemUsuarioRepository, AuthService authService, ComidaService comidaService) {
         this.receitaRepository = receitaRepository;
         this.itemRepository = itemRepository;
         this.comidaRepository = comidaRepository;
@@ -34,6 +35,7 @@ public class ReceitaService {
 
         this.receitaItemUsuarioRepository = receitaItemUsuarioRepository;
         this.authService = authService;
+        this.comidaService = comidaService;
     }
 
     @Transactional
@@ -72,7 +74,34 @@ public class ReceitaService {
         }
         return receita;
     }
+    @Transactional
+    public void criarReceitaPronta(ReceitaProntaDTO dto){
+        Usuario usuario = authService.getUsuario();
+    ReceitaResponseDTO receitaResponseDTO =  salvar(new ReceitaDTO(dto.getNome()));
 
+    Receita receita = receitaRepository.findByIdAndUsuarioId(receitaResponseDTO.getId(),
+            usuario.getId()).orElseThrow(
+                    () -> new RuntimeException("Erro ao achar receita"));
+        for (ReceitaProntaItemDTO item : dto.getItemList()) {
+
+            ComidaResponseDTO comida =
+                    comidaService.buscarComidaNome(item.getNomeComida());
+
+            if (comida == null) {
+                throw new RuntimeException("Comida não encontrada: " + item.getNomeComida());
+            }
+
+            ReceitaItemRequestDTO request = new ReceitaItemRequestDTO(
+                    comida.getId(),
+                    comida.getUnidadeId(),
+                    item.getQuantidade(),
+                    item.getValor(),
+                    comida.getOrigem()
+            );
+
+            adicionarItem(request, receita.getId());
+        }
+    }
 
     private ReceitaItem buscarReceitaItem(Long id,Long receitaId){
 
@@ -379,12 +408,12 @@ public class ReceitaService {
 
     }
 
-    public List<ReceitaDTO> listarReceitaUsuario(){
+    public List<ReceitaResponseDTO> listarReceitaUsuario(){
         Usuario usuario = authService.getUsuario();
         List<Receita> lista = receitaRepository.findAllByUsuarioId(usuario.getId());
 
         return lista.stream()
-                .map((receita) -> new ReceitaDTO(
+                .map((receita) -> new ReceitaResponseDTO(
                         receita.getId(),
                         receita.getNome()
                 ))
