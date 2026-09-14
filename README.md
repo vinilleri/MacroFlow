@@ -752,33 +752,11 @@ Algumas das principais áreas do sistema incluem:
 
 ## Status do projeto
 
-**Em desenvolvimento.**
+**Pronto**
 
-O MacroFlow está sendo desenvolvido como um projeto acadêmico de TCC, utilizando tecnologias e padrões comuns no desenvolvimento de aplicações web modernas.
+O MacroFlow foi desenvolvido como um projeto acadêmico de TCC, utilizando tecnologias e padrões comuns no desenvolvimento de aplicações web modernas.
 
-Atualmente, o projeto concentra seus esforços principalmente em:
 
-* evolução da experiência do usuário;
-* sistema de recomendações;
-* integração e evolução do assistente de IA;
-* refinamento da API;
-* segurança;
-* organização da arquitetura;
-* integração entre frontend e backend.
-
----
-
-## Próximos passos
-
-Algumas das áreas previstas para evolução incluem:
-
-* aprimoramento do sistema de recomendações;
-* evolução do assistente virtual;
-* utilização mais inteligente dos dados históricos;
-* melhorias na experiência do usuário;
-* expansão da análise nutricional;
-* melhorias de observabilidade e tratamento de erros;
-* evolução da documentação da API.
 
 ---
 
@@ -803,11 +781,11 @@ O projeto reúne conhecimentos de:
 
 ---
 
-## Autor
+## Autores
 
-**Vinícius Coelho**
+**Vinícius Coelho, Guilherme Vieira, Ricardo Otávio**
 
-Desenvolvedor responsável pelo desenvolvimento do projeto MacroFlow.
+Desenvolvedores responsáveis pelo desenvolvimento do projeto MacroFlow.
 
 ---
 
