@@ -119,7 +119,7 @@ public class UsuarioService {
     public CompletudeDTO verificarCompletudeUsuario(){
      Usuario usuario = authService.getUsuario();
 
-     return new CompletudeDTO(objetivoRepository.existsByUsuarioId(usuario.getId()),
+     return new CompletudeDTO(objetivoRepository.existsByUsuarioIdAndAtivo(usuario.getId(),true),
              medidasCorporaisRepository.existsByUsuarioId(usuario.getId()),
              metaRepository.existsByUsuarioId(usuario.getId())
      );

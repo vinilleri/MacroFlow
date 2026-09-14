@@ -11,6 +11,5 @@ public interface ObjetivoRepository   extends JpaRepository<Objetivo,Long> {
     Optional<Objetivo> findByUsuarioIdAndAtivo(Long usuarioId,Boolean ativo);
     Optional<Objetivo> findByUsuarioIdAndAtivoAndId(Long usuarioId,Boolean ativo,Long Id);
     List<Objetivo> findAllByUsuarioIdAndAtivo(Long usuarioId,Boolean ativo);
-
-    boolean existsByUsuarioId(Long id);
+    boolean existsByUsuarioIdAndAtivo(Long id, boolean ativo);
 }

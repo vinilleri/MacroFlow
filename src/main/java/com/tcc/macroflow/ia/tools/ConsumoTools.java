@@ -14,7 +14,7 @@ public class ConsumoTools {
         this.consumoService = consumoService;
     }
     @Tool(description = "Consulta o consumo nutricional do usuário no dia atual.")
-    public MacroDTO chamarConsumoDia(){
+      public MacroDTO buscarConsumoDia(){
         return  consumoService.somarConsumoDia();
     }
 }
