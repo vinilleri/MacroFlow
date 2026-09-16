@@ -63,6 +63,16 @@ public class ReceitaService {
         receitaRepository.save(receita);
         return new ReceitaResponseDTO(receita.getId(), receita.getNome());
     }
+    public ReceitaResponseDTO buscarReceitaNome(String nome){
+        List<ReceitaResponseDTO> receitas = listarReceitaUsuario();
+
+        for(ReceitaResponseDTO receita:receitas){
+            if(receita.getNome().toLowerCase().contains(nome.toLowerCase())){
+                return receita;
+            }
+        }
+        return null;
+    }
 
     private Receita buscarReceitaUsuario(Long receitaId){
         Usuario usuario = authService.getUsuario();
