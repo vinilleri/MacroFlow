@@ -416,7 +416,7 @@ public class EmailService
         margin:30px 0;
       ">
 
-        <a href="http://127.0.0.1:5500/paginas/recuperarSenha.html?token=""" + tokenRecuperacao.getCodigo() + """
+        <a href="http://macroflow.app.br/paginas/recuperarSenha.html?token=""" + tokenRecuperacao.getCodigo() + """
         " style="
           display:inline-block;
           padding:15px 28px;
